@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUid(String uid);
     Optional<User> findByNickname(String nickname);
 
-    @Query("select u from User u join fetch Town t")
+    @Query("select u from User u join fetch u.town")
     List<User> findAllWithTown();
 
     @Query("select u from User u join fetch u.town where u.id = :id")
