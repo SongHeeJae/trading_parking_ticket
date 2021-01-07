@@ -7,10 +7,7 @@ import com.kuke.parkingticket.advice.exception.UserNicknameAlreadyException;
 import com.kuke.parkingticket.config.security.JwtTokenProvider;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.entity.User;
-import com.kuke.parkingticket.model.dto.UserLoginRequestDto;
-import com.kuke.parkingticket.model.dto.UserLoginResponseDto;
-import com.kuke.parkingticket.model.dto.UserRegisterRequestDto;
-import com.kuke.parkingticket.model.dto.UserRegisterResponseDto;
+import com.kuke.parkingticket.model.dto.*;
 import com.kuke.parkingticket.repository.TownRepository;
 import com.kuke.parkingticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +40,7 @@ public class SignService {
                         passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getNickname(),
                         town));
-        return new UserRegisterResponseDto(saveUser.getUid(), town.getName());
+        return new UserRegisterResponseDto(saveUser.getUid(), new TownDto(town.getId(), town.getName()));
     }
 
     private void validateDuplicateUser(String uid, String nickname) {
