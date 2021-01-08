@@ -58,7 +58,7 @@ public class User extends CommonDateEntity {
                 .build();
     }
 
-    public void updateUser(String nickname, Town town) {
+    public void update(String nickname, Town town) {
         this.nickname = nickname;
         this.town = town;
     }

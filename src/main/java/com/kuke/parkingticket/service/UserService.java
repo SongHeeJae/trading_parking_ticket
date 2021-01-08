@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +38,7 @@ public class UserService {
         validateDuplicateUserNickname(requestDto.getNickname());
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
-        user.updateUser(requestDto.getNickname(), town);
+        user.update(requestDto.getNickname(), town);
         return new UserDto(user.getId(), user.getUid(), user.getNickname(), new TownDto(user.getTown().getId(), user.getTown().getName()), user.getCreatedAt(), user.getModifiedAt());
     }
 

@@ -53,5 +53,17 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1005, "이미 등록된 유저 닉네임입니다.");
     }
 
+    @ExceptionHandler(TicketNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result ticketNotFoundException() {
+        return responseService.handleFailResult(-1006, "해당 주차권을 찾을 수 없습니다.");
+    }
+
+    @ExceptionHandler(FileConvertException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result fileConvertException() {
+        return responseService.handleFailResult(-1007, "파일 변환에 실패하였습니다.");
+    }
+
 
 }

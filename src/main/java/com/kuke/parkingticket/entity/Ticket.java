@@ -1,6 +1,7 @@
 package com.kuke.parkingticket.entity;
 
 import lombok.*;
+import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -90,5 +91,20 @@ public class Ticket extends CommonDateEntity{
         this.images.add(image);
     }
 
+    public void update(String title, String content, int price, String address, LocalDateTime startDateTime,
+                       LocalDateTime endDateTime, TermType termType, TicketStatus ticketStatus, PlaceType placeType) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.address = address;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.termType = termType;
+        this.ticketStatus = ticketStatus;
+        this.placeType = placeType;
+    }
 
+    public void addView() {
+        this.view++;
+    }
 }
