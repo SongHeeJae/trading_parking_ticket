@@ -64,11 +64,6 @@ public class Ticket extends CommonDateEntity{
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @PostLoad
-    public void postLoad() {
-        view++;
-    }
-
     public static Ticket createTicket(String title, String content, String address, int price, User writer,
                                Town town, PlaceType placeType, TermType termType, TicketStatus ticketStatus) {
         return Ticket.builder()
