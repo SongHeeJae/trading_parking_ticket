@@ -12,6 +12,8 @@ import com.kuke.parkingticket.repository.TicketRepository;
 import com.kuke.parkingticket.repository.TownRepository;
 import com.kuke.parkingticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,11 @@ public class TicketService {
     private final UserRepository userRepository;
     private final TownRepository townRepository;
     private final FileService fileService;
+
+    public Page<TicketSimpleDto> findAllTickets(TicketSearchConditionDto conditionDto, Pageable pageable) {
+        return ticketRepository.findAllTicketWithConditions(conditionDto, pageable);
+    }
+
     public TicketDto createTicket(List<MultipartFile> files, TicketCreateRequestDto requestDto) {
         User user = userRepository.findUser(requestDto.getUserId()).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);

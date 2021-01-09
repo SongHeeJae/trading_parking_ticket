@@ -1,16 +1,20 @@
 package com.kuke.parkingticket.controller;
 
+import com.kuke.parkingticket.entity.PlaceType;
 import com.kuke.parkingticket.model.dto.*;
+import com.kuke.parkingticket.model.response.MultipleResult;
 import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.model.response.SingleResult;
 import com.kuke.parkingticket.service.ResponseService;
 import com.kuke.parkingticket.service.TicketService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Api(value = "Ticket Controller", tags = {"Ticket"})
@@ -20,6 +24,12 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
     private final ResponseService responseService;
+
+    @ApiOperation(value = "주차권 글 목록 조회", notes = "주차권 글 목록을 조회한다.")
+    @GetMapping(value = "/tickets")
+    public SingleResult<Page<TicketSimpleDto>> findAllTickets(@NotNull Pageable pageable, TicketSearchConditionDto conditionDto){
+        return responseService.handleSingleResult(ticketService.findAllTickets(conditionDto, pageable));
+    }
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
