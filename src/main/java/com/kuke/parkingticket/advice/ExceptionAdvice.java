@@ -5,6 +5,7 @@ import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -63,6 +64,18 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result fileConvertException() {
         return responseService.handleFailResult(-1007, "파일 변환에 실패하였습니다.");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result accessDeniedException() {
+        return responseService.handleFailResult(-1008, "해당 권한이 없습니다.");
+    }
+
+    @ExceptionHandler(AuthenticationEntryPointException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result authenticationEntryPointException() {
+        return responseService.handleFailResult(-1009, "해당 권한이 없습니다.");
     }
 
 
