@@ -4,19 +4,15 @@ import com.kuke.parkingticket.advice.exception.UserIdAlreadyExistsException;
 import com.kuke.parkingticket.advice.exception.UserNicknameAlreadyException;
 import com.kuke.parkingticket.entity.Region;
 import com.kuke.parkingticket.entity.Town;
-import com.kuke.parkingticket.entity.User;
-import com.kuke.parkingticket.model.dto.UserRegisterRequestDto;
-import com.kuke.parkingticket.repository.RegionRepository;
-import com.kuke.parkingticket.repository.TownRepository;
+import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
+import com.kuke.parkingticket.repository.region.RegionRepository;
+import com.kuke.parkingticket.repository.town.TownRepository;
+import com.kuke.parkingticket.service.sign.SignService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -24,7 +20,8 @@ class SignServiceTest {
 
     @Autowired RegionRepository regionRepository;
     @Autowired TownRepository townRepository;
-    @Autowired SignService signService;
+    @Autowired
+    SignService signService;
 
     @Test
     public void duplicateUserRegisterTest() {

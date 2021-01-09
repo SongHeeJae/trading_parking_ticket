@@ -1,23 +1,19 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.model.dto.UserDto;
-import com.kuke.parkingticket.model.dto.UserUpdateRequestDto;
+import com.kuke.parkingticket.model.dto.user.UserDto;
+import com.kuke.parkingticket.model.dto.user.UserUpdateRequestDto;
 import com.kuke.parkingticket.model.response.MultipleResult;
 import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.model.response.SingleResult;
-import com.kuke.parkingticket.repository.UserRepository;
+import com.kuke.parkingticket.repository.user.UserRepository;
 import com.kuke.parkingticket.service.ResponseService;
-import com.kuke.parkingticket.service.UserService;
+import com.kuke.parkingticket.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Api(value = "User Controller", tags = {"User"})
 @RestController

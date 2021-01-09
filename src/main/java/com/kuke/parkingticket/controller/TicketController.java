@@ -1,12 +1,10 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.entity.PlaceType;
-import com.kuke.parkingticket.model.dto.*;
-import com.kuke.parkingticket.model.response.MultipleResult;
+import com.kuke.parkingticket.model.dto.ticket.*;
 import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.model.response.SingleResult;
 import com.kuke.parkingticket.service.ResponseService;
-import com.kuke.parkingticket.service.TicketService;
+import com.kuke.parkingticket.service.ticket.TicketService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

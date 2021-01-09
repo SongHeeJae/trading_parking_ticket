@@ -1,20 +1,15 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.advice.exception.LoginFailureException;
-import com.kuke.parkingticket.entity.User;
-import com.kuke.parkingticket.model.dto.UserLoginRequestDto;
-import com.kuke.parkingticket.model.dto.UserLoginResponseDto;
-import com.kuke.parkingticket.model.dto.UserRegisterRequestDto;
-import com.kuke.parkingticket.model.dto.UserRegisterResponseDto;
+import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
+import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
+import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
+import com.kuke.parkingticket.model.dto.user.UserRegisterResponseDto;
 import com.kuke.parkingticket.model.response.SingleResult;
-import com.kuke.parkingticket.repository.UserRepository;
 import com.kuke.parkingticket.service.ResponseService;
-import com.kuke.parkingticket.service.SignService;
+import com.kuke.parkingticket.service.sign.SignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @Api(value = "Sign Controller", tags = {"Sign"})
