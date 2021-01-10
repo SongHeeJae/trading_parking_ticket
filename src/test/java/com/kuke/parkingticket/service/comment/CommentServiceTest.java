@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
 class CommentServiceTest {
     @Autowired CommentService commentService;
     @Autowired SignService signService;
@@ -122,6 +121,9 @@ class CommentServiceTest {
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
         CommentDto comment2 = commentService.createComment(new CommentCreateRequestDto("content2", ticket.getId(), user.getId(), comment1.getId()));
+        em.flush();
+        em.clear();
+
         // when
         commentService.deleteComment(comment1.getId());
         em.flush();
@@ -136,7 +138,7 @@ class CommentServiceTest {
     }
 
     @Test
-    public void parentCascadeDeleteTest() {
+    public void deleteParentCascadeTest() {
         /**
          * 1
          *  2
@@ -155,29 +157,41 @@ class CommentServiceTest {
         CommentDto comment4 = commentService.createComment(new CommentCreateRequestDto("content4", ticket.getId(), user.getId(), comment3.getId()));
         em.flush();
         em.clear();
-
+        
         // when
         commentService.deleteComment(comment2.getId());
-        System.out.println("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
-
         commentService.deleteComment(comment3.getId());
-        System.out.println("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
-
         commentService.deleteComment(comment4.getId());
         em.flush();
         em.clear();
-        System.out.println("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
         List<Comment> comments = em.createQuery("select c from Comment c where c.ticket.id = :ticketId", Comment.class)
                 .setParameter("ticketId", ticket.getId()).getResultList();
-
-        for (Comment comment : comments) {
-            System.out.println("comment.getContent = " + comment.getContent());
-            System.out.println("comment.getIsDeleted() = " + comment.getIsDeleted());
-        }
 
         // then
         assertThat(comments.size()).isEqualTo(1);
         assertThat(comments.get(0).getContent()).isEqualTo("content1");
+    }
+
+    @Test
+    public void deletedCommentContentTest() {
+        // given
+        User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+        em.persist(ticket);
+        CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
+        commentService.createComment(new CommentCreateRequestDto("content2", ticket.getId(), user.getId(), comment1.getId()));
+        em.flush();
+        em.clear();
+        // when
+        commentService.deleteComment(comment1.getId());
+        em.flush();
+        em.clear();
+        List<CommentDto> result = commentService.findCommentsByTicketId(ticket.getId());
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getContent()).isEqualTo("삭제된 댓글입니다.");
     }
 
 }
