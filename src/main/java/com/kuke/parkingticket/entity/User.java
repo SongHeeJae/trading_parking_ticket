@@ -1,6 +1,7 @@
 package com.kuke.parkingticket.entity;
 
 
+import com.kuke.parkingticket.entity.date.CommonDateEntity;
 import lombok.*;
 
 import javax.persistence.*;

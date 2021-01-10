@@ -1,5 +1,7 @@
 package com.kuke.parkingticket.entity;
 
+import com.kuke.parkingticket.entity.date.CommonDateEntity;
+import com.kuke.parkingticket.entity.date.CreatedDateEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class History extends CommonDateEntity {
+public class History extends CreatedDateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

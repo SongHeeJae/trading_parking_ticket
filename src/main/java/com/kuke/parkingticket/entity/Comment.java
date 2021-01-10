@@ -1,5 +1,7 @@
 package com.kuke.parkingticket.entity;
 
+import com.kuke.parkingticket.entity.date.CommonDateEntity;
+import com.kuke.parkingticket.entity.date.CreatedDateEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class Comment extends CommonDateEntity{
+public class Comment extends CreatedDateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -37,7 +39,8 @@ public class Comment extends CommonDateEntity{
     private Comment parent;
 
     @Builder.Default
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent",
+            orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 
     public static Comment createComment(String content, Ticket ticket, User writer, Comment parent) {
@@ -47,6 +50,10 @@ public class Comment extends CommonDateEntity{
                 .writer(writer)
                 .parent(parent)
                 .isDeleted(DeleteStatus.N).build();
+    }
+
+    public void changeDeletedStatus(DeleteStatus deleteStatus) {
+        this.isDeleted = deleteStatus;
     }
 
 }

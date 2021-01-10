@@ -1,5 +1,7 @@
 package com.kuke.parkingticket.entity;
 
+import com.kuke.parkingticket.entity.date.CommonDateEntity;
+import com.kuke.parkingticket.entity.date.CreatedDateEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Review extends CommonDateEntity {
+public class Review extends CreatedDateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

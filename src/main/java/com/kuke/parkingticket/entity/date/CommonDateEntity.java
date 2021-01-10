@@ -1,4 +1,4 @@
-package com.kuke.parkingticket.entity;
+package com.kuke.parkingticket.entity.date;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

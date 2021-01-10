@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local
+    include:
+      - aws
   datasource:
     url: jdbc:h2:tcp://localhost/~/parkingticket
     username: sa
@@ -8,7 +10,7 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
 #        show_sql: true
