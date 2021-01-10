@@ -5,8 +5,6 @@ import com.kuke.parkingticket.advice.exception.TicketNotFoundException;
 import com.kuke.parkingticket.advice.exception.UserNotFoundException;
 import com.kuke.parkingticket.entity.Comment;
 import com.kuke.parkingticket.entity.DeleteStatus;
-import com.kuke.parkingticket.entity.Ticket;
-import com.kuke.parkingticket.entity.User;
 import com.kuke.parkingticket.model.dto.comment.CommentCreateRequestDto;
 import com.kuke.parkingticket.model.dto.comment.CommentDto;
 import com.kuke.parkingticket.repository.comment.CommentRepository;
@@ -16,13 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -53,14 +48,14 @@ public class CommentService {
         if(comment.getChildren().size() != 0) {
             comment.changeDeletedStatus(DeleteStatus.Y);
         } else {
-            commentRepository.delete(getDeletableAncestorCommentCascade(comment));
+            commentRepository.delete(getDeletableAncestorComment(comment));
         }
     }
 
-    private Comment getDeletableAncestorCommentCascade(Comment comment) {
+    private Comment getDeletableAncestorComment(Comment comment) {
         Comment parent = comment.getParent();
         if(parent != null && parent.getChildren().size() == 1 && parent.getIsDeleted() == DeleteStatus.Y)
-                return getDeletableAncestorCommentCascade(parent);
+                return getDeletableAncestorComment(parent);
         return comment;
     }
 
