@@ -1,4 +1,4 @@
-package com.kuke.parkingticket.service;
+package com.kuke.parkingticket.service.sign;
 
 import com.kuke.parkingticket.advice.exception.UserIdAlreadyExistsException;
 import com.kuke.parkingticket.advice.exception.UserNicknameAlreadyException;

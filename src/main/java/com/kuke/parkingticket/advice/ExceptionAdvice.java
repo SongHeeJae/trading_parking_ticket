@@ -90,4 +90,10 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1011, "리뷰가 이미 작성되었습니다.");
     }
 
+    @ExceptionHandler(HistoryNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result historyNotFoundException() {
+        return responseService.handleFailResult(-1012, "해당 내역을 찾을 수 없습니다.");
+    }
+
 }
