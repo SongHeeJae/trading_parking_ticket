@@ -84,5 +84,10 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1010, "해당 댓글을 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(ReviewAlreadyWrittenException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result reviewAlreadyWrittenException() {
+        return responseService.handleFailResult(-1011, "리뷰가 이미 작성되었습니다.");
+    }
 
 }

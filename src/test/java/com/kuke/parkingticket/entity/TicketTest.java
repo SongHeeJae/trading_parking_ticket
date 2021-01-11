@@ -32,26 +32,6 @@ class TicketTest {
     }
 
     @Test
-    public void ticketViewTest() {
-        // given
-        User findUser = em.createQuery("select u from User u where u.uid = :uid", User.class)
-                .setParameter("uid", "gmlwo308").getSingleResult();
-        Town findTown = em.createQuery("select t from Town t where t.name = :name", Town.class)
-                .setParameter("name", "희재동").getSingleResult();
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, findUser, findTown,
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
-        em.persist(ticket);
-        // when
-        for(int i=0; i<10; i++) {
-            em.flush();
-            em.clear();
-            Ticket findTicket = em.find(Ticket.class, ticket.getId());
-            // then
-            assertThat(findTicket.getView()).isEqualTo(i+1);
-        }
-    }
-
-    @Test
     public void ticketCascadePersistTest() {
         // given
         User findUser = em.createQuery("select u from User u where u.uid = :uid", User.class)
