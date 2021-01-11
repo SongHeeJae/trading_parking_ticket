@@ -26,12 +26,11 @@ public class UserService {
 
     public List<UserDto> findAll() {
         return userRepository.findAllWithTown().stream()
-            .map(u -> new UserDto(u.getId(), u.getUid(), u.getNickname(),
-                    new TownDto(u.getTown().getId(), u.getTown().getName()), u.getCreatedAt(), u.getModifiedAt())).collect(Collectors.toList());
+            .map(u -> convertUserToDto(u)).collect(Collectors.toList());
     }
 
     public UserDto findUser(Long userId) {
-        return userRepository.findUser(userId).map(u -> new UserDto(u.getId(), u.getUid(), u.getNickname(), new TownDto(u.getTown().getId(), u.getTown().getName()), u.getCreatedAt(), u.getModifiedAt())).orElseThrow(UserNotFoundException::new);
+        return convertUserToDto(userRepository.findUser(userId).orElseThrow(UserNotFoundException::new));
     }
 
     public UserDto updateUser(Long userId, UserUpdateRequestDto requestDto) {
@@ -39,6 +38,10 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
         user.update(requestDto.getNickname(), town);
+        return convertUserToDto(user);
+    }
+
+    private UserDto convertUserToDto(User user) {
         return new UserDto(user.getId(), user.getUid(), user.getNickname(), new TownDto(user.getTown().getId(), user.getTown().getName()), user.getCreatedAt(), user.getModifiedAt());
     }
 
