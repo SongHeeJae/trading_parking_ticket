@@ -65,7 +65,8 @@ public class Ticket extends CommonDateEntity {
     private List<Comment> comments = new ArrayList<>();
 
     public static Ticket createTicket(String title, String content, String address, int price, User writer,
-                               Town town, PlaceType placeType, TermType termType, TicketStatus ticketStatus) {
+                               Town town, PlaceType placeType, TermType termType, TicketStatus ticketStatus,
+                                      LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return Ticket.builder()
                 .title(title)
                 .content(content)
@@ -75,7 +76,9 @@ public class Ticket extends CommonDateEntity {
                 .town(town)
                 .placeType(placeType)
                 .termType(termType)
-                .ticketStatus(ticketStatus).build();
+                .ticketStatus(ticketStatus)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime).build();
     }
 
     public void addComment(Comment comment) {

@@ -28,8 +28,7 @@ class HistoryServiceTest {
 
     @Autowired SignService signService;
     @Autowired EntityManager em;
-    @Autowired
-    TicketService ticketService;
+    @Autowired TicketService ticketService;
     @Autowired HistoryService historyService;
     @Autowired UserRepository userRepository;
 
@@ -48,9 +47,9 @@ class HistoryServiceTest {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
-        em.persist(ticket);
+//        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+//                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+//        em.persist(ticket);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 

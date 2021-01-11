@@ -58,7 +58,7 @@ class CommentServiceTest {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         Comment comment1 = Comment.createComment("content1", ticket, user, null);
         em.persist(comment1);
@@ -117,7 +117,7 @@ class CommentServiceTest {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
         CommentDto comment2 = commentService.createComment(new CommentCreateRequestDto("content2", ticket.getId(), user.getId(), comment1.getId()));
@@ -149,7 +149,7 @@ class CommentServiceTest {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
         CommentDto comment2 = commentService.createComment(new CommentCreateRequestDto("content2", ticket.getId(), user.getId(), comment1.getId()));
@@ -177,7 +177,7 @@ class CommentServiceTest {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
         commentService.createComment(new CommentCreateRequestDto("content2", ticket.getId(), user.getId(), comment1.getId()));

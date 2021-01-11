@@ -50,7 +50,9 @@ public class TicketService {
                 town,
                 requestDto.getPlaceType(),
                 requestDto.getTermType(),
-                requestDto.getTicketStatus()
+                requestDto.getTicketStatus(),
+                requestDto.getStartDateTime(),
+                requestDto.getEndDateTime()
         );
         for (int i=0; i<files.size(); i++) {
             ticket.addImage(Image.createImage(

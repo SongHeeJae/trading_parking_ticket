@@ -6,6 +6,7 @@ import com.kuke.parkingticket.entity.TicketStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,11 +19,13 @@ public class TicketCreateRequestDto {
     private String content;
     private int price;
     private String address;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
     private Long userId;
     private Long townId;
     private TermType termType;
     private TicketStatus ticketStatus;
     private PlaceType placeType;
+    @DateTimeFormat(pattern = "yyyyMMddHHmm")
+    private LocalDateTime startDateTime;
+    @DateTimeFormat(pattern = "yyyyMMddHHmm")
+    private LocalDateTime endDateTime;
 }

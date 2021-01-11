@@ -61,7 +61,7 @@ class ReviewServiceTest {
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer.getId(), seller.getId(), ticket.getId()));
 
@@ -80,7 +80,7 @@ class ReviewServiceTest {
         User buyer5 = userRepository.findByUid("buyer5").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
         Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer1.getId(), seller.getId(), ticket.getId()));
         reviewService.createReview(new ReviewCreateRequestDto("review2", 5, buyer2.getId(), seller.getId(), ticket.getId()));
@@ -117,15 +117,15 @@ class ReviewServiceTest {
         User seller4 = userRepository.findByUid("buyer5").orElseThrow(UserNotFoundException::new);
         User seller5 = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
         Ticket ticket1 = Ticket.createTicket("title", "content", "address", 0, seller1, seller1.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Ticket ticket2 = Ticket.createTicket("title", "content", "address", 0, seller2, seller2.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Ticket ticket3 = Ticket.createTicket("title", "content", "address", 0, seller3, seller3.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Ticket ticket4 = Ticket.createTicket("title", "content", "address", 0, seller4, seller4.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Ticket ticket5 = Ticket.createTicket("title", "content", "address", 0, seller5, seller5.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket1);
         em.persist(ticket2);
         em.persist(ticket3);

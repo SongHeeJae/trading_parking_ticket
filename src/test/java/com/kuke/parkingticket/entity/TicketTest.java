@@ -39,7 +39,7 @@ class TicketTest {
         Town findTown = em.createQuery("select t from Town t where t.name = :name", Town.class)
                 .setParameter("name", "희재동").getSingleResult();
         Ticket ticket = Ticket.createTicket("title", "content", "address", 0, findUser, findTown,
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON);
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Comment comment1 = Comment.createComment("content1", ticket, findUser, null);
         Comment comment2 = Comment.createComment("content2", ticket, findUser, null);
         Image image1 = Image.createImage("/name1", ticket);
