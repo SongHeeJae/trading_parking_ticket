@@ -54,10 +54,76 @@ class CommentServiceTest {
     }
 
     @Test
+    public void createCommentTest() {
+        // given
+        User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
+        em.persist(ticket);
+
+        // when
+        CommentDto dto = commentService.createComment(new CommentCreateRequestDto("content", ticket.getId(), user.getId(), null));
+        em.flush();
+        em.clear();
+
+        // then
+        Comment result = commentRepository.findById(dto.getId()).orElseThrow(CommentNotFoundException::new);
+        assertThat(result.getId()).isEqualTo(dto.getId());
+        assertThat(result.getContent()).isEqualTo(dto.getContent());
+        assertThat(result.getParent()).isNull();
+        assertThat(result.getChildren().size()).isEqualTo(0);
+        assertThat(result.getIsDeleted()).isEqualTo(DeleteStatus.N);
+        assertThat(result.getTicket().getId()).isEqualTo(ticket.getId());
+        assertThat(result.getWriter().getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    public void createReplyCommentTest() {
+        // given
+        User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
+        em.persist(ticket);
+        CommentDto parentDto = commentService.createComment(new CommentCreateRequestDto("content", ticket.getId(), user.getId(), null));
+
+        // when
+        CommentDto childDto = commentService.createComment(new CommentCreateRequestDto("content", ticket.getId(), user.getId(), parentDto.getId()));
+        em.flush();
+        em.clear();
+
+        // then
+        Comment parent = commentRepository.findById(parentDto.getId()).orElseThrow(CommentNotFoundException::new);
+        Comment child = commentRepository.findById(childDto.getId()).orElseThrow(CommentNotFoundException::new);
+        assertThat(parent.getChildren().size()).isEqualTo(1);
+        assertThat(child.getParent().getId()).isEqualTo(parent.getId());
+
+    }
+
+    @Test
+    public void deleteCommentTest() {
+        // given
+        User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
+        em.persist(ticket);
+        CommentDto dto = commentService.createComment(new CommentCreateRequestDto("content", ticket.getId(), user.getId(), null));
+
+        // when
+        commentRepository.deleteById(dto.getId());
+
+        // then
+
+        assertThrows(CommentNotFoundException.class, () ->
+                commentRepository.findById(dto.getId()).orElseThrow(CommentNotFoundException::new)
+        );
+    }
+
+
+    @Test
     public void nestedStructureTest() {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
                 PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         Comment comment1 = Comment.createComment("content1", ticket, user, null);
@@ -116,7 +182,7 @@ class CommentServiceTest {
 
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
                 PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
@@ -148,7 +214,7 @@ class CommentServiceTest {
          */
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
                 PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));
@@ -176,7 +242,7 @@ class CommentServiceTest {
     public void deletedCommentContentTest() {
         // given
         User user = userRepository.findByUid("CommentServiceTest").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("", "content", "address", 0, user, user.getTown(),
+        Ticket ticket = Ticket.createTicket("test", "content", "address", 0, user, user.getTown(),
                 PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         em.persist(ticket);
         CommentDto comment1 = commentService.createComment(new CommentCreateRequestDto("content1", ticket.getId(), user.getId(), null));

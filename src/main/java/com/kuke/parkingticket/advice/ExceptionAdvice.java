@@ -96,4 +96,10 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1012, "해당 내역을 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(ReviewNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result reviewNotFoundException() {
+        return responseService.handleFailResult(-1013, "해당 리뷰를 찾을 수 없습니다.");
+    }
+
 }

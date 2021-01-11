@@ -1,12 +1,14 @@
 package com.kuke.parkingticket.service.review;
 
 import com.kuke.parkingticket.advice.exception.ReviewAlreadyWrittenException;
+import com.kuke.parkingticket.advice.exception.ReviewNotFoundException;
 import com.kuke.parkingticket.advice.exception.UserNotFoundException;
 import com.kuke.parkingticket.entity.*;
 import com.kuke.parkingticket.model.dto.review.ReviewCreateRequestDto;
 import com.kuke.parkingticket.model.dto.review.ReviewDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
 import com.kuke.parkingticket.repository.comment.CommentRepository;
+import com.kuke.parkingticket.repository.review.ReviewRepository;
 import com.kuke.parkingticket.repository.ticket.TicketRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
 import com.kuke.parkingticket.service.comment.CommentService;
@@ -36,6 +38,7 @@ class ReviewServiceTest {
     @Autowired TicketRepository ticketRepository;
     @Autowired ReviewService reviewService;
     @Autowired UserRepository userRepository;
+    @Autowired ReviewRepository reviewRepository;
 
     @BeforeEach
     public void beforeEach() {
@@ -56,6 +59,51 @@ class ReviewServiceTest {
     }
 
     @Test
+    public void createReviewTest() {
+        // given
+        User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
+        User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
+        em.persist(ticket);
+
+        // when
+        ReviewDto dto = reviewService.createReview(new ReviewCreateRequestDto("content", 5, buyer.getId(), seller.getId(), ticket.getId()));
+        em.flush();
+        em.clear();
+
+        // then
+        Review review = reviewRepository.findById(dto.getId()).orElseThrow(ReviewNotFoundException::new);
+        assertThat(review.getId()).isEqualTo(dto.getId());
+        assertThat(review.getBuyer().getId()).isEqualTo(dto.getBuyerId());
+        assertThat(review.getSeller().getId()).isEqualTo(dto.getSellerId());
+        assertThat(review.getTicket().getId()).isEqualTo(dto.getTicketId());
+    }
+
+    @Test
+    public void deleteReviewTest() {
+        // given
+        User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
+        User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
+        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
+        em.persist(ticket);
+        ReviewDto dto = reviewService.createReview(new ReviewCreateRequestDto("content", 5, buyer.getId(), seller.getId(), ticket.getId()));
+        em.flush();
+        em.clear();
+
+        // when
+        reviewRepository.deleteById(dto.getId());
+
+        // then
+        assertThrows(ReviewNotFoundException.class, () ->
+                reviewRepository.findById(dto.getId()).orElseThrow(ReviewNotFoundException::new)
+        );
+    }
+
+
+
+    @Test
     public void validateDuplicateReviewBySameUserTest() {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
@@ -71,7 +119,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    public void typedReviewInfiniteScrollTest() {
+    public void findTypedReviewInfiniteScrollTest() {
         // given
         User buyer1 = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User buyer2 = userRepository.findByUid("buyer2").orElseThrow(UserNotFoundException::new);
@@ -108,7 +156,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    public void typingReviewInfiniteScrollTest() {
+    public void findTypingReviewInfiniteScrollTest() {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller1 = userRepository.findByUid("buyer2").orElseThrow(UserNotFoundException::new);

@@ -47,8 +47,8 @@ class HistoryServiceTest {
         em.persist(region);
         Town town = Town.createTown("ReviewServiceTest", region);
         em.persist(town);
-        signService.registerUser(new UserRegisterRequestDto("buyer", "1234", "buyer", town.getId()));
-        signService.registerUser(new UserRegisterRequestDto("seller", "1234", "seller", town.getId()));
+        signService.registerUser(new UserRegisterRequestDto("buyer1", "1234", "buyer", town.getId()));
+        signService.registerUser(new UserRegisterRequestDto("seller1", "1234", "seller", town.getId()));
     }
 
     @Test
