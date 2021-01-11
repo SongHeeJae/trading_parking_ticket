@@ -45,7 +45,7 @@ public class History extends CreatedDateEntity {
                 .price(price)
                 .ticket(ticket)
                 .buyer(buyer)
-//                .seller(seller)
+                .seller(seller)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime).build();
     }

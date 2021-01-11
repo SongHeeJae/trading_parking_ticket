@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRegisterResponseDto {
+    private Long id;
     private String uid;
-    private TownDto town;
+    private String nickname;
 }

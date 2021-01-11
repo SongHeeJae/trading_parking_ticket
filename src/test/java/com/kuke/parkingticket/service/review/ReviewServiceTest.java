@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ReviewServiceTest {
 
-
     @Autowired SignService signService;
     @Autowired EntityManager em;
     @Autowired TicketRepository ticketRepository;
@@ -72,7 +71,6 @@ class ReviewServiceTest {
     }
 
     @Test
-    @Rollback(false)
     public void typedReviewInfiniteScrollTest() {
         // given
         User buyer1 = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);

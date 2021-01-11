@@ -38,13 +38,13 @@ public class SignService {
     public UserRegisterResponseDto registerUser(UserRegisterRequestDto requestDto) {
         validateDuplicateUser(requestDto.getUid(), requestDto.getNickname());
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
-        User saveUser = userRepository.save(
+        User user = userRepository.save(
                 User.createUser(
                         requestDto.getUid(),
                         passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getNickname(),
                         town));
-        return new UserRegisterResponseDto(saveUser.getUid(), new TownDto(town.getId(), town.getName()));
+        return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
     }
 
     private void validateDuplicateUser(String uid, String nickname) {
