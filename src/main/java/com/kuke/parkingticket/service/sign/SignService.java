@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SignService {
     private final UserRepository userRepository;
@@ -35,6 +35,7 @@ public class SignService {
         return new UserLoginResponseDto(jwtTokenProvider.createToken(String.valueOf(user.getId())));
     }
 
+    @Transactional
     public UserRegisterResponseDto registerUser(UserRegisterRequestDto requestDto) {
         validateDuplicateUser(requestDto.getUid(), requestDto.getNickname());
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);

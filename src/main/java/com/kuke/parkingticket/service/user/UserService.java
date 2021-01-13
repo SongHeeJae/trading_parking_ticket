@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
@@ -33,6 +33,7 @@ public class UserService {
         return convertUserToDto(userRepository.findUser(userId).orElseThrow(UserNotFoundException::new));
     }
 
+    @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequestDto requestDto) {
         validateDuplicateUserNickname(requestDto.getNickname());
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);

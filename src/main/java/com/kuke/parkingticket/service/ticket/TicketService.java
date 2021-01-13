@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TicketService {
     private final TicketRepository ticketRepository;
@@ -38,6 +38,7 @@ public class TicketService {
         return ticketRepository.findAllTicketWithConditions(conditionDto, pageable);
     }
 
+    @Transactional
     public TicketDto createTicket(List<MultipartFile> files, TicketCreateRequestDto requestDto) {
         User user = userRepository.findUser(requestDto.getUserId()).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
@@ -69,6 +70,7 @@ public class TicketService {
         return id + "_" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond() + "_" + idx + ext;
     }
 
+    @Transactional
     public void updateTicket(Long ticketId, List<MultipartFile> files, TicketUpdateRequestDto requestDto) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(TicketNotFoundException::new);
         List<String> savedImageNames = ticket.getImages().stream().map(i -> i.getPath()).collect(Collectors.toList()); // 기존에 저장된 이미지명
@@ -110,6 +112,7 @@ public class TicketService {
                 ticket.getCreatedAt(), ticket.getModifiedAt());
     }
 
+    @Transactional
     public void deleteTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(TicketNotFoundException::new);
         ticket.getImages().stream().forEach(t -> fileService.delete(t.getPath()));

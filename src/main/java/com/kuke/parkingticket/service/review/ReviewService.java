@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
@@ -44,6 +44,7 @@ public class ReviewService {
     }
 
 
+    @Transactional
     public ReviewDto createReview(ReviewCreateRequestDto requestDto) {
         validateDuplicateReviewBySameUser(requestDto.getTicketId(), requestDto.getBuyerId());
         save = reviewRepository.save(
@@ -56,7 +57,7 @@ public class ReviewService {
         return convertReviewToDto(review);
     }
 
-
+    @Transactional
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }

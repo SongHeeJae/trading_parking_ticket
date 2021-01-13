@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.function.Function;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class HistoryService {
 
@@ -32,7 +32,7 @@ public class HistoryService {
      */
     public Slice<HistoryDto> findSalesHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextSalesHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map((Function<History, HistoryDto>) h -> convertHistoryToDto(h));
+                .map(h -> convertHistoryToDto(h));
     }
 
     /**
@@ -40,9 +40,10 @@ public class HistoryService {
      */
     public Slice<HistoryDto> findPurchaseHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextPurchaseHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map((Function<History, HistoryDto>) h -> convertHistoryToDto(h));
+                .map(h -> convertHistoryToDto(h));
     }
 
+    @Transactional
     public HistoryDto createHistory(HistoryCreateRequestDto requestDto) {
         History history = historyRepository.save(
                 History.createHistory(
@@ -56,6 +57,7 @@ public class HistoryService {
         return convertHistoryToDto(history);
     }
 
+    @Transactional
     public void deleteHistory(Long historyId) {
         historyRepository.deleteById(historyId);
     }

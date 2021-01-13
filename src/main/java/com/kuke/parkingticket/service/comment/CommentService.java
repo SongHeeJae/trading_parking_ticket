@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -32,6 +32,7 @@ public class CommentService {
         return convertNestedStructure(commentRepository.findCommentByTicketId(ticketId));
     }
 
+    @Transactional
     public CommentDto createComment(CommentCreateRequestDto requestDto) {
         Comment comment = commentRepository.save(
                 Comment.createComment(requestDto.getContent(),
@@ -43,6 +44,7 @@ public class CommentService {
         return convertCommentToDto(comment);
     }
 
+    @Transactional
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findCommentByIdWithParent(commentId).orElseThrow(CommentNotFoundException::new);
         if(comment.getChildren().size() != 0) {
