@@ -102,4 +102,10 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1013, "해당 리뷰를 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(RegionNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result regionNotFoundException() {
+        return responseService.handleFailResult(-1013, "해당 지역을 찾을 수 없습니다.");
+    }
+
 }

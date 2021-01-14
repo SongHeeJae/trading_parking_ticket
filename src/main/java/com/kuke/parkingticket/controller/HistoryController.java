@@ -30,16 +30,17 @@ public class HistoryController {
     @GetMapping(value = "/histories/sale/{userId}")
     public SingleResult<Slice<HistoryDto>> findSalesHistoriesByUserId(
             @PathVariable("userId") Long userId,
-            @RequestParam("lastHistoryId") Long lastHistoryId,
+            @RequestParam(value = "lastHistoryId", required = false) Long lastHistoryId,
             @RequestParam(value = "limit", defaultValue = "15") int limit ) {
         return responseService.handleSingleResult(historyService.findSalesHistoriesByUserId(userId, lastHistoryId, limit));
     }
+
 
     @ApiOperation(value = "해당 유저의 구매 내역 조회", notes = "해당 유저의 구매 내역을 조회한다.")
     @GetMapping(value = "/histories/purchase/{userId}")
     public SingleResult<Slice<HistoryDto>> findPurchaseHistoriesByUserId(
             @PathVariable("userId") Long userId,
-            @RequestParam(value = "lastHistoryId") Long lastHistoryId,
+            @RequestParam(value = "lastHistoryId", required = false) Long lastHistoryId,
             @RequestParam(value = "limit", defaultValue = "15") int limit ) {
         return responseService.handleSingleResult(historyService.findPurchaseHistoriesByUserId(userId, lastHistoryId, limit));
     }

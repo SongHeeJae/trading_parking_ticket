@@ -42,7 +42,8 @@ public class UserController {
     })
     @ApiOperation(value = "회원 정보 수정", notes = "회원 정보를 수정한다.")
     @PutMapping(value = "/users/{userId}")
-    public SingleResult<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto requestDto) {
+    public SingleResult<UserDto> updateUser(@PathVariable("" +
+            "userId") Long userId, @RequestBody UserUpdateRequestDto requestDto) {
         return responseService.handleSingleResult(userService.updateUser(userId, requestDto));
     }
 

@@ -32,7 +32,7 @@ public class SignService {
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword()))
             throw new LoginFailureException();
-        return new UserLoginResponseDto(jwtTokenProvider.createToken(String.valueOf(user.getId())));
+        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())));
     }
 
     @Transactional

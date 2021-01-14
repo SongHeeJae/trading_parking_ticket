@@ -32,7 +32,7 @@ public class ReviewController {
     @GetMapping(value = "/reviews/typing/{userId}")
     public SingleResult<Slice<ReviewDto>> findTypingReviewByUserId(
             @PathVariable("userId") Long userId,
-            @RequestParam("lastReviewId") Long lastReviewId,
+            @RequestParam(value = "lastReviewId", required = false) Long lastReviewId,
             @RequestParam(value = "limit", defaultValue = "15") int limit ) {
         return responseService.handleSingleResult(reviewService.findTypingReviewsByUserId(userId, lastReviewId, limit));
     }
@@ -41,7 +41,7 @@ public class ReviewController {
     @GetMapping(value = "/reviews/typed/{userId}")
     public SingleResult<Slice<ReviewDto>> findTypedReviewByUserId(
             @PathVariable("userId") Long userId,
-            @RequestParam(value = "lastReviewId") Long lastReviewId,
+            @RequestParam(value = "lastReviewId", required = false) Long lastReviewId,
             @RequestParam(value = "limit", defaultValue = "15") int limit ) {
         return responseService.handleSingleResult(reviewService.findTypedReviewsByUserId(userId, lastReviewId, limit));
     }

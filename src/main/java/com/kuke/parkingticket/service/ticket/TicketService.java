@@ -39,7 +39,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketDto createTicket(List<MultipartFile> files, TicketCreateRequestDto requestDto) {
+    public TicketDto createTicket(TicketCreateRequestDto requestDto) {
         User user = userRepository.findUser(requestDto.getUserId()).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
         Ticket ticket = Ticket.createTicket(
@@ -55,9 +55,9 @@ public class TicketService {
                 requestDto.getStartDateTime(),
                 requestDto.getEndDateTime()
         );
-        for (int i=0; i<files.size(); i++) {
+        for (int i=0; i<requestDto.getFiles().size(); i++) {
             ticket.addImage(Image.createImage(
-                    fileService.upload(files.get(i), generateImageName(files.get(i), i, user.getId())),
+                    fileService.upload(requestDto.getFiles().get(i), generateImageName(requestDto.getFiles().get(i), i, user.getId())),
                     ticket));
         }
         ticketRepository.save(ticket);
@@ -71,12 +71,12 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateTicket(Long ticketId, List<MultipartFile> files, TicketUpdateRequestDto requestDto) {
+    public void updateTicket(Long ticketId, TicketUpdateRequestDto requestDto) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(TicketNotFoundException::new);
         List<String> savedImageNames = ticket.getImages().stream().map(i -> i.getPath()).collect(Collectors.toList()); // 기존에 저장된 이미지명
-        List<String> updateImageNames = files.stream().map(f -> f.getOriginalFilename()).collect(Collectors.toList()); // 가져온 이미지명
+        List<String> updateImageNames = requestDto.getFiles().stream().map(f -> f.getOriginalFilename()).collect(Collectors.toList()); // 가져온 이미지명
 
-        List<MultipartFile> newImages = files.stream().filter(f -> !savedImageNames.contains(f.getOriginalFilename())).collect(Collectors.toList());
+        List<MultipartFile> newImages = requestDto.getFiles().stream().filter(f -> !savedImageNames.contains(f.getOriginalFilename())).collect(Collectors.toList());
         List<Image> deleteImages = ticket.getImages().stream().filter(i -> !updateImageNames.contains(i.getPath())).collect(Collectors.toList()); // 삭제될 이미지
 
         for (int i=0; i<newImages.size(); i++) {

@@ -25,6 +25,7 @@ public class CommentController {
 
     @ApiOperation(value = "주차권의 댓글 목록 조회", notes = "해당 주차권의 댓글 목록을 조회한다.")
     @GetMapping(value = "/comments/{ticketId}")
+
     public MultipleResult<CommentDto> findAllCommentsByTicketId(@PathVariable("ticketId") Long ticketId) {
         return responseService.handleListResult(commentService.findCommentsByTicketId(ticketId));
     }

@@ -29,15 +29,14 @@ public class TicketController {
         return responseService.handleSingleResult(ticketService.findAllTickets(conditionDto, pageable));
     }
 
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "주차권 글 작성", notes = "주차권 글을 작성한다.")
     @PostMapping(value = "/tickets", headers = "content-type=multipart/form-data")
-    public SingleResult<TicketDto> createTicket(
-            @RequestParam(value = "file", required = false) List<MultipartFile> files,
-            @ModelAttribute TicketCreateRequestDto requestDto ) {
-        return responseService.handleSingleResult(ticketService.createTicket(files, requestDto));
+    public SingleResult<TicketDto> createTicket(@ModelAttribute TicketCreateRequestDto requestDto) {
+        return responseService.handleSingleResult(ticketService.createTicket(requestDto));
     }
 
     @ApiImplicitParams({
@@ -47,9 +46,8 @@ public class TicketController {
     @PutMapping(value = "/tickets/{ticketId}")
     public Result updateTicket(
             @PathVariable("ticketId") Long ticketId,
-            @RequestParam(value = "file", required = false) List<MultipartFile> files,
             @ModelAttribute TicketUpdateRequestDto requestDto ) {
-        ticketService.updateTicket(ticketId, files, requestDto);
+        ticketService.updateTicket(ticketId, requestDto);
         return responseService.handleSuccessResult();
     }
 
