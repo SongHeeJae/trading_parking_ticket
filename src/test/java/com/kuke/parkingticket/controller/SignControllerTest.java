@@ -6,12 +6,14 @@ import com.kuke.parkingticket.config.security.JwtTokenProvider;
 import com.kuke.parkingticket.entity.Region;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
+import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterResponseDto;
 import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.service.ResponseService;
 import com.kuke.parkingticket.service.sign.SignService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
@@ -46,6 +49,7 @@ class SignControllerTest {
     @Autowired RegionRepository regionRepository;
     @Autowired TownRepository townRepository;
     @Autowired SignService signService;
+    @Autowired JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     public void beforeEach() {
@@ -87,5 +91,22 @@ class SignControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.token").exists())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    public void logoutTest() throws Exception {
+
+        // given
+        UserLoginResponseDto loginDto = signService.loginUser(new UserLoginRequestDto("test", "1234"));
+        String token = loginDto.getToken();
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/logout")
+                .header("X-AUTH-TOKEN", token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andDo(MockMvcResultHandlers.print());
+
+        assertThat(jwtTokenProvider.validateToken(token)).isFalse();
     }
 }

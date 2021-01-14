@@ -1,11 +1,13 @@
 package com.kuke.parkingticket.config.security;
 
+import com.kuke.parkingticket.common.cache.CacheKey;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +29,7 @@ public class JwtTokenProvider {
     private String secretKey;
 
     private long tokenValidMillisecond = 1000L * 60 * 60; // 1시간
-
+    private final RedisTemplate redisTemplate;
     private final UserDetailsService userDetailsService;
 
     @PostConstruct
@@ -62,13 +65,24 @@ public class JwtTokenProvider {
         return req.getHeader("X-AUTH-TOKEN");
     }
 
-    // jwt 토큰의 유효성 + 만료일자 확인
+    public Duration getRemainingSeconds(String jwtToken) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+        long seconds = (claims.getBody().getExpiration().getTime() - claims.getBody().getIssuedAt().getTime()) / 1000;
+        return Duration.ofSeconds(seconds < 0 ? 0 : seconds);
+    }
+
+    // jwt 토큰의 유효성 + 만료일자 확인 + 로그아웃 확인
     public boolean validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            if(isLoggedOut(jwtToken)) return false;
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean isLoggedOut(String jwtToken) {
+        return redisTemplate.opsForValue().get(CacheKey.TOKEN + ":" + jwtToken) != null;
     }
 }
