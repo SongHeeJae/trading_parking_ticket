@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
     include:
-      - aws
+      - credential
   datasource:
     url: jdbc:h2:tcp://localhost/~/parkingticket
     username: sa
@@ -18,6 +18,10 @@ spring:
 #        use_sql_comments: true
         default_batch_fetch_size: 100
     open-in-view: false
+  redis:
+    host: localhost
+    port: 6379
+
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace

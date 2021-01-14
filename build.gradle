@@ -44,6 +44,10 @@ dependencies {
 
 	//querydsl
 	implementation 'com.querydsl:querydsl-jpa'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 test {
