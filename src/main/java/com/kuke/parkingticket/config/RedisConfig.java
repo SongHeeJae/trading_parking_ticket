@@ -57,6 +57,11 @@ public class RedisConfig {
         cacheConfigurations.put(CacheKey.TICKET, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.TICKETS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.REGION, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.REGION_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.COMMENTS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.COMMENTS_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.SALES_HISTORIES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.SALES_HISTORIES_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.PURCHASE_HISTORIES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.PURCHASE_HISTORIES_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.TYPED_REVIEWS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TYPED_REVIEWS_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.TYPING_REVIEWS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TYPING_REVIEWS_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory())

@@ -1,5 +1,6 @@
 package com.kuke.parkingticket.model.dto.ticket;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kuke.parkingticket.entity.PlaceType;
 import com.kuke.parkingticket.entity.TermType;
 import com.kuke.parkingticket.entity.TicketStatus;
@@ -28,6 +29,7 @@ public class TicketSearchConditionDto {
     List<PlaceType> placeTypes = new ArrayList<>();
     List<TicketStatus> ticketStatuses = new ArrayList<>();
     @DateTimeFormat(pattern = "yyyyMMddHHmm")
+    @JsonFormat(pattern = "yyyyMMddHHmm")
     LocalDateTime dateTime;
 
 }
