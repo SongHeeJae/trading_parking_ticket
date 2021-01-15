@@ -9,4 +9,6 @@ public class CacheKey {
     public static final String TICKETS = "tickets";
     public static final int TICKET_EXPIRE_SEC = 60 * 5; // 5 minutes
     public static final String TOKEN = "token";
+    public static final String REGION = "region";
+    public static final int REGION_EXPIRE_SEC = 60 * 10; // 10 minutes
 }

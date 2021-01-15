@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EnableJpaAuditing
-@EnableCaching
 @SpringBootApplication
 public class ParkingticketApplication {
 

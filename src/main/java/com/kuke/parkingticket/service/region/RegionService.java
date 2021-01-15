@@ -1,9 +1,11 @@
 package com.kuke.parkingticket.service.region;
 
+import com.kuke.parkingticket.common.cache.CacheKey;
 import com.kuke.parkingticket.model.dto.region.RegionDto;
 import com.kuke.parkingticket.model.dto.town.TownDto;
 import com.kuke.parkingticket.repository.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class RegionService {
     private final RegionRepository regionRepository;
 
+    @Cacheable(value = CacheKey.REGION, unless = "#result == null")
     public List<RegionDto> findAllRegionsWithTowns() {
         return regionRepository.findAll().stream().map(r ->
             new RegionDto(r.getId(), r.getName(), r.getTowns().stream().map(t -> new TownDto(t.getId(), t.getName())).collect(Collectors.toList()))

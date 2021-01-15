@@ -3,6 +3,7 @@ package com.kuke.parkingticket.config;
 import com.kuke.parkingticket.common.cache.CacheKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.CacheKeyPrefix;
@@ -19,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+@EnableCaching
 @Configuration
 public class RedisConfig {
 
@@ -54,6 +56,7 @@ public class RedisConfig {
         cacheConfigurations.put(CacheKey.USER, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.USER_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.TICKET, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.TICKETS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.REGION, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.REGION_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory())
