@@ -188,6 +188,7 @@ class TicketControllerTest {
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/tickets")
+                .queryParam("townId", String.valueOf(town.getId()))
                 .queryParam("size", "30")
                 .queryParam("page", "0")
                 .queryParam("termTypes", "DAY")

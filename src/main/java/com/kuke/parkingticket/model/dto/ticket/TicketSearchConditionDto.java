@@ -23,10 +23,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TicketSearchConditionDto {
+    Long townId;
     List<TermType> termTypes = new ArrayList<>();
     List<PlaceType> placeTypes = new ArrayList<>();
     List<TicketStatus> ticketStatuses = new ArrayList<>();
-
     @DateTimeFormat(pattern = "yyyyMMddHHmm")
     LocalDateTime dateTime;
 

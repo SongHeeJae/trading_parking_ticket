@@ -30,10 +30,10 @@ class RegionServiceTest {
     public void findAllRegionsWithTownsTest() {
 
         // given
-        String[] regionNames = new String[]{"서울", "경기"};
+        String[] regionNames = new String[]{"region1", "region2"};
         String[][] townNames = new String[2][];
-        townNames[0] = new String[]{"희재1동", "희재2동"};
-        townNames[1] = new String[]{"재희1동", "재희2동", "재희3동"};
+        townNames[0] = new String[]{"town11", "town12"};
+        townNames[1] = new String[]{"town21", "town22", "town23"};
         for(int i=0; i<regionNames.length; i++) {
             Region region = regionRepository.save(Region.createRegion(regionNames[i]));
             for(int j=0; j<townNames[i].length; j++) {
@@ -45,6 +45,7 @@ class RegionServiceTest {
 
         // when
         List<RegionDto> result = regionService.findAllRegionsWithTowns();
+        System.out.println("result = " + result);
 
         // then
         assertThat(result.size()).isEqualTo(2);

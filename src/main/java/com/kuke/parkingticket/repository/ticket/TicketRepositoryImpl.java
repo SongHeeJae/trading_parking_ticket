@@ -7,6 +7,7 @@ import com.kuke.parkingticket.entity.TicketStatus;
 import com.kuke.parkingticket.model.dto.ticket.TicketSearchConditionDto;
 import com.kuke.parkingticket.model.dto.ticket.TicketSimpleDto;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -49,9 +50,14 @@ public class TicketRepositoryImpl extends QuerydslRepositorySupport implements C
 
     private BooleanBuilder ticketSearchPredicate(TicketSearchConditionDto conditionDto) {
         return new BooleanBuilder()
+                .and(townIdEq(conditionDto.getTownId()))
                 .and(termTypeOrCondition(conditionDto.getTermTypes(), conditionDto.getDateTime()))
                 .and(placeTypeOrCondition(conditionDto.getPlaceTypes()))
                 .and(ticketStatusOrCondition(conditionDto.getTicketStatuses()));
+    }
+
+    private BooleanExpression townIdEq(Long townId) {
+        return townId != null ? ticket.town.id.eq(townId) : null;
     }
 
     private BooleanBuilder dateTimeCondition(LocalDateTime dateTime) {

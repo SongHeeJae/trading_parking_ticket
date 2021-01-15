@@ -23,11 +23,11 @@ class TicketTest {
 
     @BeforeEach
     public void beforeEach() {
-        Region region = Region.createRegion("서울");
+        Region region = Region.createRegion("TicketTest");
         em.persist(region);
-        Town town = Town.createTown("희재동", region);
+        Town town = Town.createTown("TicketTest", region);
         em.persist(town);
-        User user = User.createUser("gmlwo308", "1234", "희재희재", town);
+        User user = User.createUser("TicketTest", "1234", "TicketTest", town);
         em.persist(user);
     }
 
@@ -35,28 +35,24 @@ class TicketTest {
     public void ticketCascadePersistTest() {
         // given
         User findUser = em.createQuery("select u from User u where u.uid = :uid", User.class)
-                .setParameter("uid", "gmlwo308").getSingleResult();
+                .setParameter("uid", "TicketTest").getSingleResult();
         Town findTown = em.createQuery("select t from Town t where t.name = :name", Town.class)
-                .setParameter("name", "희재동").getSingleResult();
+                .setParameter("name", "TicketTest").getSingleResult();
         Ticket ticket = Ticket.createTicket("title", "content", "address", 0, findUser, findTown,
                 PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
         Comment comment1 = Comment.createComment("content1", ticket, findUser, null);
         Comment comment2 = Comment.createComment("content2", ticket, findUser, null);
-        Image image1 = Image.createImage("/name1", ticket);
-        Image image2 = Image.createImage("/name2", ticket);
+
         // when
         ticket.addComment(comment1);
         ticket.addComment(comment2);
-        ticket.addImage(image1);
-        ticket.addImage(image2);
         em.persist(ticket);
         em.flush();
         em.clear();
 
-        Ticket findTicket = em.find(Ticket.class, ticket.getId());
         // then
+        Ticket findTicket = em.find(Ticket.class, ticket.getId());
         assertThat(findTicket.getComments().size()).isEqualTo(2);
-        assertThat(findTicket.getImages().size()).isEqualTo(2);
     }
 
 }
