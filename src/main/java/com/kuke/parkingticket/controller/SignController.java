@@ -1,7 +1,5 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.common.cache.CacheKey;
-import com.kuke.parkingticket.config.security.JwtTokenProvider;
 import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
 import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
@@ -13,7 +11,6 @@ import com.kuke.parkingticket.service.sign.SignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @Api(value = "Sign Controller", tags = {"Sign"})
@@ -23,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class SignController {
     private final ResponseService responseService;
     private final SignService signService;
-    private final RedisTemplate redisTemplate;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @ApiOperation(value="로그인", notes = "아이디와 비밀번호로 로그인을 한다.")
     @PostMapping(value = "/login")
@@ -41,8 +36,7 @@ public class SignController {
     @ApiOperation(value = "로그아웃", notes = "로그아웃을 한다")
     @PostMapping(value = "/logout")
     public Result logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
-        redisTemplate.opsForValue().set(CacheKey.TOKEN + ":" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
+        signService.logoutUserToken(token);
         return responseService.handleSuccessResult();
     }
 }
-

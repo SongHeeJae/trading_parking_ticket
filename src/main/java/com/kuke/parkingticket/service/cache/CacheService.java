@@ -23,4 +23,20 @@ public class CacheService {
     public void deleteMessagesCache(Long messageId, Long senderId, Long receiverId) {
         log.debug("CacheService.deleteMessagesCache - messageId {}, senderId {}, receiverId {}", messageId, senderId, receiverId);
     }
+
+    @Caching(evict = {
+            @CacheEvict(value = CacheKey.PURCHASE_HISTORIES, key = "#buyerId", allEntries = true),
+            @CacheEvict(value = CacheKey.SALES_HISTORIES, key = "#sellerId", allEntries = true)
+    })
+    public void deleteHistoriesCache(Long buyerId, Long sellerId) {
+        log.debug("CacheService.deleteHistoriesCache - buyerId {}, sellerId {}", buyerId, sellerId);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(value = CacheKey.TYPING_REVIEWS, key = "#buyerId", allEntries = true),
+            @CacheEvict(value = CacheKey.TYPED_REVIEWS, key = "#sellerId", allEntries = true)
+    })
+    public void deleteReviewsCache(Long buyerId, Long sellerId) {
+        log.debug("CacheService.deleteReviewsCache - buyerId {}, sellerId {}", buyerId, sellerId);
+    }
 }

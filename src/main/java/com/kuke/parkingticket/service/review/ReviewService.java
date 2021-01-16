@@ -1,6 +1,7 @@
 package com.kuke.parkingticket.service.review;
 
 import com.kuke.parkingticket.advice.exception.ReviewAlreadyWrittenException;
+import com.kuke.parkingticket.advice.exception.ReviewNotFoundException;
 import com.kuke.parkingticket.advice.exception.TicketNotFoundException;
 import com.kuke.parkingticket.advice.exception.UserNotFoundException;
 import com.kuke.parkingticket.common.cache.CacheKey;
@@ -10,6 +11,7 @@ import com.kuke.parkingticket.model.dto.review.ReviewDto;
 import com.kuke.parkingticket.repository.review.ReviewRepository;
 import com.kuke.parkingticket.repository.ticket.TicketRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
+import com.kuke.parkingticket.service.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,7 +31,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
-    private Review save;
+    private final CacheService cacheService;
 
     /**
      * 사용자가 작성한 리뷰. 마지막 리뷰 아이디 다음 것부터 limit 개수 만큼 가져옴
@@ -52,28 +54,25 @@ public class ReviewService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = CacheKey.TYPED_REVIEWS, allEntries = true),
-            @CacheEvict(cacheNames = CacheKey.TYPING_REVIEWS, allEntries = true)
+            @CacheEvict(value = CacheKey.TYPING_REVIEWS, key = "#requestDto.buyerId", allEntries = true),
+            @CacheEvict(value = CacheKey.TYPED_REVIEWS, key = "#requestDto.sellerId", allEntries = true)
     })
     public ReviewDto createReview(ReviewCreateRequestDto requestDto) {
         validateDuplicateReviewBySameUser(requestDto.getTicketId(), requestDto.getBuyerId());
-        save = reviewRepository.save(
+        Review review = reviewRepository.save(
                 Review.createReview(requestDto.getContent(),
                         requestDto.getScore(),
                         userRepository.findById(requestDto.getBuyerId()).orElseThrow(UserNotFoundException::new),
                         userRepository.findById(requestDto.getSellerId()).orElseThrow(UserNotFoundException::new),
                         ticketRepository.findById(requestDto.getTicketId()).orElseThrow(TicketNotFoundException::new)));
-        Review review = save;
         return convertReviewToDto(review);
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = CacheKey.TYPED_REVIEWS, allEntries = true),
-            @CacheEvict(cacheNames = CacheKey.TYPING_REVIEWS, allEntries = true)
-    })
     public void deleteReview(Long reviewId) {
-        reviewRepository.deleteById(reviewId);
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+        cacheService.deleteReviewsCache(review.getBuyer().getId(), review.getSeller().getId());
+        reviewRepository.delete(review);
     }
 
 

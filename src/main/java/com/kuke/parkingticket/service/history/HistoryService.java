@@ -1,5 +1,6 @@
 package com.kuke.parkingticket.service.history;
 
+import com.kuke.parkingticket.advice.exception.HistoryNotFoundException;
 import com.kuke.parkingticket.advice.exception.TicketNotFoundException;
 import com.kuke.parkingticket.advice.exception.UserNotFoundException;
 import com.kuke.parkingticket.common.cache.CacheKey;
@@ -11,6 +12,7 @@ import com.kuke.parkingticket.model.dto.review.ReviewDto;
 import com.kuke.parkingticket.repository.history.HistoryRepository;
 import com.kuke.parkingticket.repository.ticket.TicketRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
+import com.kuke.parkingticket.service.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,6 +32,7 @@ public class HistoryService {
     private final HistoryRepository historyRepository;
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final CacheService cacheService;
 
     /**
      * 사용자가 판매한 내역. 마지막 내역 아이디 다음 것부터 limit 개수 만큼 가져옴
@@ -51,8 +54,8 @@ public class HistoryService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = CacheKey.PURCHASE_HISTORIES, allEntries = true),
-            @CacheEvict(cacheNames = CacheKey.SALES_HISTORIES, allEntries = true)
+            @CacheEvict(value = CacheKey.PURCHASE_HISTORIES, key = "#requestDto.buyerId", allEntries = true),
+            @CacheEvict(value = CacheKey.SALES_HISTORIES, key = "#requestDto.sellerId", allEntries = true)
     })
     public HistoryDto createHistory(HistoryCreateRequestDto requestDto) {
         History history = historyRepository.save(
@@ -68,11 +71,9 @@ public class HistoryService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(cacheNames = CacheKey.PURCHASE_HISTORIES, allEntries = true),
-            @CacheEvict(cacheNames = CacheKey.SALES_HISTORIES, allEntries = true)
-    })
     public void deleteHistory(Long historyId) {
+        History history = historyRepository.findById(historyId).orElseThrow(HistoryNotFoundException::new);
+        cacheService.deleteHistoriesCache(history.getBuyer().getId(), history.getSeller().getId());
         historyRepository.deleteById(historyId);
     }
 
