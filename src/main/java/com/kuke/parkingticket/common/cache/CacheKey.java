@@ -20,5 +20,11 @@ public class CacheKey {
     public static final int TYPED_REVIEWS_EXPIRE_SEC = 60 * 3; // 3 minuets
     public static final String REGION = "region";
     public static final int REGION_EXPIRE_SEC = 60 * 10; // 10 minutes
+    public static final String SENT_MESSAGES = "sent_messages";
+    public static final int SENT_MESSAGES_EXPIRE_SEC = 3 * 10; // 3 minutes
+    public static final String RECEIVED_MESSAGES = "received_messages";
+    public static final int RECEIVED_MESSAGES_EXPIRE_SEC = 3 * 10; // 3 minutes
+    public static final String MESSAGE = "message";
+    public static final int MESSAGE_EXPIRE_SEC = 3 * 10; // 3 minutes
     public static final String TOKEN = "token";
 }

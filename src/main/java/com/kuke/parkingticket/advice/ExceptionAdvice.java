@@ -105,7 +105,13 @@ public class ExceptionAdvice {
     @ExceptionHandler(RegionNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result regionNotFoundException() {
-        return responseService.handleFailResult(-1013, "해당 지역을 찾을 수 없습니다.");
+        return responseService.handleFailResult(-1014, "해당 지역을 찾을 수 없습니다.");
+    }
+
+    @ExceptionHandler(MessageNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result messageNotFoundException() {
+        return responseService.handleFailResult(-1015, "해당 메시지를 찾을 수 없습니다.");
     }
 
 }

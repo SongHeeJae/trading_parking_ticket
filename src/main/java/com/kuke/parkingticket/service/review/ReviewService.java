@@ -34,19 +34,19 @@ public class ReviewService {
     /**
      * 사용자가 작성한 리뷰. 마지막 리뷰 아이디 다음 것부터 limit 개수 만큼 가져옴
      */
-    @Cacheable(value = CacheKey.TYPING_REVIEWS, key = "{#userId, #lastHistoryId, #limit}")
+    @Cacheable(value = CacheKey.TYPING_REVIEWS, key = "{#userId, #limit, #lastReviewId}")
     public Slice<ReviewDto> findTypingReviewsByUserId(Long userId, Long lastReviewId, int limit) {
         return reviewRepository.findNextTypingReviewsByUserIdOrderByCreatedAt(userId, lastReviewId != null ? lastReviewId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map((Function<Review, ReviewDto>) r -> convertReviewToDto(r));
+                .map(r -> convertReviewToDto(r));
     }
 
     /**
      * 사용자에게 작성된 리뷰. 마지막 리뷰 아이디 다음 것부터 limit 개수 만큼 가져옴
      */
-    @Cacheable(value = CacheKey.TYPED_REVIEWS, key = "{#userId, #lastHistoryId, #limit}")
+    @Cacheable(value = CacheKey.TYPED_REVIEWS, key = "{#userId, #limit, #lastReviewId}")
     public Slice<ReviewDto> findTypedReviewsByUserId(Long userId, Long lastReviewId, int limit) {
         return reviewRepository.findNextTypedReviewsByUserIdOrderByCreatedAt(userId, lastReviewId != null ? lastReviewId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map((Function<Review, ReviewDto>) r -> convertReviewToDto(r));
+                .map(r -> convertReviewToDto(r));
     }
 
 

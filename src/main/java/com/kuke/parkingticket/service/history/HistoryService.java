@@ -34,7 +34,7 @@ public class HistoryService {
     /**
      * 사용자가 판매한 내역. 마지막 내역 아이디 다음 것부터 limit 개수 만큼 가져옴
      */
-    @Cacheable(value = CacheKey.SALES_HISTORIES, key = "{#userId, #lastHistoryId, #limit}")
+    @Cacheable(value = CacheKey.SALES_HISTORIES, key = "{#userId, #limit, #lastHistoryId}")
     public Slice<HistoryDto> findSalesHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextSalesHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
                 .map(h -> convertHistoryToDto(h));
@@ -43,7 +43,7 @@ public class HistoryService {
     /**
      * 사용자에게 구매한 내역. 마지막 내역 아이디 다음 것부터 limit 개수 만큼 가져옴
      */
-    @Cacheable(value = CacheKey.PURCHASE_HISTORIES, key = "{#userId, #lastHistoryId, #limit}")
+    @Cacheable(value = CacheKey.PURCHASE_HISTORIES, key = "{#userId, #limit, #lastHistoryId}")
     public Slice<HistoryDto> findPurchaseHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextPurchaseHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
                 .map(h -> convertHistoryToDto(h));

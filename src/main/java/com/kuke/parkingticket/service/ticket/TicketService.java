@@ -98,11 +98,13 @@ public class TicketService {
                 ,requestDto.getStartDateTime(), requestDto.getEndDateTime(), requestDto.getTermType(), requestDto.getTicketStatus(), requestDto.getPlaceType());
     }
 
+    @Transactional
     public TicketDto readTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findTicketByIdWithWriterAndTown(ticketId).orElseThrow(TicketNotFoundException::new);
         ticket.addView();
         return convertTicketToDto(ticket);
     }
+
 
     private TicketDto convertTicketToDto(Ticket ticket) {
         String baseUrl = fileService.getBaseUrl();
