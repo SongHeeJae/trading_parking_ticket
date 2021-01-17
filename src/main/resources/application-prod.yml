@@ -1,0 +1,28 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/parkingticket?useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        #        show_sql: true
+        #        format_sql: true
+        #        use_sql_comments: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+  redis:
+    host: redis
+    port: 6379
+
+
+logging.level:
+  org.hibernate.SQL: debug
+#  org.hibernate.type: trace
