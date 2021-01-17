@@ -12,6 +12,7 @@ import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.service.message.MessageService;
 import com.kuke.parkingticket.service.sign.SignService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -31,6 +33,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -63,14 +66,31 @@ class AlarmServiceTest {
     }
 
     @Test
+    public void connectionFailedByInvalidateTokenTest() {
+
+        // given
+        StompHeaders headers = new StompHeaders();
+        headers.add("token", "invalidate token");
+
+        // when, then
+        Assertions.assertThatThrownBy(() -> {
+            stompClient
+                    .connect(getWsPath(), new WebSocketHttpHeaders() ,headers, new StompSessionHandlerAdapter() {})
+                    .get(10, SECONDS);
+        }).isInstanceOf(ExecutionException.class);
+    }
+
+    @Test
     public void alarmByMessageTest() throws Exception {
 
         // given
         UserLoginResponseDto sender = signService.loginUser(new UserLoginRequestDto("sender", "1234"));
         UserLoginResponseDto receiver = signService.loginUser(new UserLoginRequestDto("receiver", "1234"));
+        StompHeaders headers = new StompHeaders();
+        headers.add("token", sender.getToken());
         StompSession session = stompClient
-                .connect(getWsPath(), new StompSessionHandlerAdapter() {})
-                .get(5, SECONDS);
+                .connect(getWsPath(), new WebSocketHttpHeaders() ,headers, new StompSessionHandlerAdapter() {})
+                .get(10, SECONDS);
         session.subscribe(WEBSOCKET_TOPIC + receiver.getId(), new DefaultStompFrameHandler());
 
         // when
@@ -79,7 +99,7 @@ class AlarmServiceTest {
 
         // then
         ObjectMapper mapper = new ObjectMapper();
-        String jsonResult = blockingQueue.poll(5, SECONDS);
+        String jsonResult = blockingQueue.poll(10, SECONDS);
         Map<String, String> result = mapper.readValue(jsonResult, Map.class);
         assertThat(result.get("message")).isEqualTo(messageDto.getMessage());
     }
