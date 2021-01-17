@@ -88,7 +88,8 @@ public class HistoryService {
                 history.getSeller().getId(),
                 history.getSeller().getNickname(),
                 history.getStartDateTime(),
-                history.getEndDateTime()
+                history.getEndDateTime(),
+                history.getCreatedAt()
         );
     }
 }

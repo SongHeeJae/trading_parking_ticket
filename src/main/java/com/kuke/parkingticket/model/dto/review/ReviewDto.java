@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class ReviewDto implements Serializable {
     private Long sellerId;
     private String sellerNickname;
     private Long ticketId;
+    private LocalDateTime createdAt;
 }

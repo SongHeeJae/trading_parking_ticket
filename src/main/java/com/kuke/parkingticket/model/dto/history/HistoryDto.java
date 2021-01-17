@@ -21,4 +21,5 @@ public class HistoryDto implements Serializable {
     private String sellerNickname;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+    private LocalDateTime createdAt;
 }

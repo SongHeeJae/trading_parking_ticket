@@ -78,7 +78,7 @@ public class ReviewService {
 
     private ReviewDto convertReviewToDto(Review review) {
         return new ReviewDto(review.getId(), review.getContent(), review.getScore(), review.getBuyer().getId(), review.getBuyer().getNickname(),
-                review.getSeller().getId(), review.getSeller().getNickname(), review.getTicket().getId());
+                review.getSeller().getId(), review.getSeller().getNickname(), review.getTicket().getId(), review.getCreatedAt());
     }
 
     private void validateDuplicateReviewBySameUser(Long ticketId, Long buyerId) {
