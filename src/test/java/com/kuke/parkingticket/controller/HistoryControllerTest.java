@@ -97,7 +97,6 @@ class HistoryControllerTest {
         Town town = townRepository.findByName("town").orElseThrow(TownNotFoundException::new);
         TicketDto ticketDto = ticketService.createTicket(new TicketCreateRequestDto(Collections.emptyList(), "title", "content", 3000, "address", seller.getId(), town.getId(), TermType.DAY, TicketStatus.ON,
                 PlaceType.APARTMENT, null, null));
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         HistoryCreateRequestDto info = new HistoryCreateRequestDto(ticketDto.getId(), buyer.getId(), seller.getId(), 3000,
                 LocalDateTime.parse("201801010000", formatter),  LocalDateTime.parse("201802010000", formatter));

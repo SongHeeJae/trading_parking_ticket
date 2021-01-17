@@ -1,14 +1,11 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.model.dto.history.HistoryCreateRequestDto;
-import com.kuke.parkingticket.model.dto.history.HistoryDto;
 import com.kuke.parkingticket.model.dto.message.MessageCreateRequestDto;
 import com.kuke.parkingticket.model.dto.message.MessageDto;
-import com.kuke.parkingticket.model.dto.review.ReviewCreateRequestDto;
-import com.kuke.parkingticket.model.dto.review.ReviewDto;
 import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.model.response.SingleResult;
 import com.kuke.parkingticket.service.ResponseService;
+import com.kuke.parkingticket.service.alarm.AlarmService;
 import com.kuke.parkingticket.service.message.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,7 +29,8 @@ public class MessageController {
     @ApiOperation(value = "메시지 전송", notes = "메세지를 전송한다.")
     @PostMapping(value = "/messages")
     public SingleResult<MessageDto> sendMessage(@RequestBody MessageCreateRequestDto requestDto) {
-        return responseService.handleSingleResult(messageService.createMessage(requestDto));
+        MessageDto messageDto = messageService.createMessage(requestDto);
+        return responseService.handleSingleResult(messageDto);
     }
 
     @ApiImplicitParams({

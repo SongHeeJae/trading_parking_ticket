@@ -12,6 +12,7 @@ import com.kuke.parkingticket.model.dto.message.MessageCreateRequestDto;
 import com.kuke.parkingticket.model.dto.message.MessageDto;
 import com.kuke.parkingticket.repository.message.MessageRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
+import com.kuke.parkingticket.service.alarm.AlarmService;
 import com.kuke.parkingticket.service.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Cache;
@@ -31,6 +32,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final CacheService cacheService;
+    private final AlarmService alarmService;
 
     /**
      * 사용자가 전송한 메시지 내역. 마지막 내역 아이디 다음 것부터 limit 개수 만큼 가져옴
@@ -70,7 +72,9 @@ public class MessageService {
                         userRepository.findById(requestDto.getReceiverId()).orElseThrow(UserNotFoundException::new),
                         requestDto.getMessage()
                 ));
-        return convertMessageToDto(message);
+        MessageDto messageDto = convertMessageToDto(message);
+        alarmService.alarmByMessage(messageDto);
+        return messageDto;
     }
 
     @Transactional
