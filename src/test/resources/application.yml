@@ -1,28 +1,34 @@
 spring:
-  config:
-    activate:
-      on-profile: local
-
+  profiles:
+    include:
+      - credential
   datasource:
-    url: jdbc:h2:tcp://localhost/~/parkingticket
+    url: jdbc:h2:mem:test
     username: sa
     password:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
-#        show_sql: true
-#        format_sql: true
-#        use_sql_comments: true
         default_batch_fetch_size: 100
     open-in-view: false
   redis:
     host: 192.168.99.100
     port: 6379
 
-
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace
+
+cloud:
+  aws:
+    s3:
+      bucket: parkingticket-s3
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      instanceProfile: true

@@ -71,7 +71,7 @@
     function connect() {
         let socket = new SockJS('http://localhost:8080/ws-stomp');
         stompClient = Stomp.over(socket);
-        stompClient.connect({"token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNjEwODgwNDE3LCJleHAiOjE2MTA4ODQwMTd9.XY8bEoPbi9ho1GiddzdVqVDAHEzL3ktg5MQPvH8J8tM"}, function (frame) {
+        stompClient.connect({"token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNjEwOTExMjcxLCJleHAiOjE2MTA5MTQ4NzF9.Y2xj5Ll9YRcb-ouNCad7psTonX85jIHTiNi7NWUUS3A"}, function (frame) {
             setConnected(true);
             console.log('Connected: ' + frame);
             stompClient.subscribe('/sub/1', function (msg) {

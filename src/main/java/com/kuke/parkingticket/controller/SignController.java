@@ -9,6 +9,8 @@ import com.kuke.parkingticket.model.response.SingleResult;
 import com.kuke.parkingticket.service.ResponseService;
 import com.kuke.parkingticket.service.sign.SignService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,19 @@ public class SignController {
     @ApiOperation(value = "로그아웃", notes = "로그아웃을 한다")
     @PostMapping(value = "/logout")
     public Result logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
-        signService.logoutUserToken(token);
+        signService.logoutUser(token);
         return responseService.handleSuccessResult();
+    }
+
+    @ApiOperation(value = "토큰 재발급", notes = "토큰을 재발급한다")
+    @PostMapping(value = "/refresh")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header"),
+            @ApiImplicitParam(name = "REFRESH-TOKEN", value = "refresh-token", required = true, dataType = "String", paramType = "header")
+    })
+    public SingleResult<UserLoginResponseDto> refreshToken(
+            @RequestHeader(value="X-AUTH-TOKEN") String token,
+            @RequestHeader(value="REFRESH-TOKEN") String refreshToken ) {
+        return responseService.handleSingleResult(signService.refreshToken(token, refreshToken));
     }
 }

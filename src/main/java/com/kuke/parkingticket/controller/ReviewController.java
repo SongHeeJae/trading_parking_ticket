@@ -27,7 +27,6 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final ResponseService responseService;
 
-
     @ApiOperation(value = "해당 유저가 작성한 리뷰 목록 조회", notes = "해당 유저가 작성한 리뷰 목록을 조회한다.")
     @GetMapping(value = "/reviews/typing/{userId}")
     public SingleResult<Slice<ReviewDto>> findTypingReviewByUserId(

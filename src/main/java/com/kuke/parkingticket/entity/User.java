@@ -5,6 +5,7 @@ import com.kuke.parkingticket.entity.date.CommonDateEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class User extends CommonDateEntity {
 
     @Column(nullable = false, unique = true, length = 30)
     private String nickname;
+
+    private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Town town;
@@ -62,5 +65,9 @@ public class User extends CommonDateEntity {
     public void update(String nickname, Town town) {
         this.nickname = nickname;
         this.town = town;
+    }
+
+    public void changeRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

@@ -1,10 +1,8 @@
 package com.kuke.parkingticket.config.security;
 
 import com.kuke.parkingticket.common.cache.CacheKey;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +26,9 @@ public class JwtTokenProvider {
     @Value("spring.jwt.secret")
     private String secretKey;
 
-    private long tokenValidMillisecond = 1000L * 60 * 60; // 1시간
+    private long tokenValidMillisecond = 1000L * 60 * 30; // 30분
+    private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 7; // 7일
+
     private final RedisTemplate redisTemplate;
     private final UserDetailsService userDetailsService;
 
@@ -49,6 +49,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // jwt refresh 토큰 생성
+    public String createRefreshToken() {
+        Date now = new Date();
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
     // jwt 토큰으로 인증 정보 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
@@ -57,7 +67,11 @@ public class JwtTokenProvider {
 
     // jwt 토큰에서 회원 구별 정보 추출
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        } catch(ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     //  header에서 token 얻음
@@ -71,12 +85,25 @@ public class JwtTokenProvider {
         return Duration.ofSeconds(seconds < 0 ? 0 : seconds);
     }
 
-    // jwt 토큰의 유효성 + 만료일자 확인 + 로그아웃 확인
+    // jwt 토큰의 유효성 + 로그아웃 확인 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             if(isLoggedOut(jwtToken)) return false;
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // jwt 토큰의 유효성 + 로그아웃 확인 + 만료일자만 초과한 토큰이면 return true;
+    public boolean validateTokenExceptExpiration(String jwtToken) {
+        try {
+            if(isLoggedOut(jwtToken)) return false;
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return claims.getBody().getExpiration().before(new Date());
+        } catch(ExpiredJwtException e) {
+            return true;
         } catch (Exception e) {
             return false;
         }
@@ -84,5 +111,13 @@ public class JwtTokenProvider {
 
     public boolean isLoggedOut(String jwtToken) {
         return redisTemplate.opsForValue().get(CacheKey.TOKEN + ":" + jwtToken) != null;
+    }
+
+    public void setTokenValidMillisecond(long tokenValidMillisecond) {
+        this.tokenValidMillisecond = tokenValidMillisecond;
+    }
+
+    public void setRefreshTokenValidMillisecond(long refreshTokenValidMillisecond) {
+        this.refreshTokenValidMillisecond = refreshTokenValidMillisecond;
     }
 }
