@@ -27,7 +27,7 @@ class TicketTest {
         em.persist(region);
         Town town = Town.createTown("TicketTest", region);
         em.persist(town);
-        User user = User.createUser("TicketTest", "1234", "TicketTest", town);
+        User user = User.createUser("TicketTest", "1234", "TicketTest", town, null);
         em.persist(user);
     }
 

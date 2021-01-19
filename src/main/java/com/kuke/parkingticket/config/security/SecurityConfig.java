@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/api/comments", "/api/comments/**", "/api/reviews", "/api/reviews/**",
                                 "/api/histories", "/api/histories/**").permitAll()
                         .antMatchers("/alarm/stomp", "/alarm/stomp/**", "/ws-stomp", "/ws-stomp/**").permitAll() // stomp
+                        .antMatchers("/social", "/social/**").permitAll() // social login view test
                         .anyRequest().authenticated()
                 .and()
                     .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())

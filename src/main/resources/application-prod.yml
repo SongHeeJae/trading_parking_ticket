@@ -21,6 +21,8 @@ spring:
   redis:
     host: redis
     port: 6379
+  url:
+    base: http://localhost:8080 # test
 
 
 logging.level:

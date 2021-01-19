@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
@@ -36,4 +37,8 @@ public class ParkingticketApplication {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 }

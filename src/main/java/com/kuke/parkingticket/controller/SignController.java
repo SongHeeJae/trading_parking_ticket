@@ -1,18 +1,15 @@
 package com.kuke.parkingticket.controller;
 
-import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
-import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
-import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
-import com.kuke.parkingticket.model.dto.user.UserRegisterResponseDto;
+import com.kuke.parkingticket.advice.exception.InvalidateProviderException;
+import com.kuke.parkingticket.model.dto.user.*;
 import com.kuke.parkingticket.model.response.Result;
 import com.kuke.parkingticket.model.response.SingleResult;
 import com.kuke.parkingticket.service.ResponseService;
 import com.kuke.parkingticket.service.sign.SignService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import com.kuke.parkingticket.service.social.KakaoService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Api(value = "Sign Controller", tags = {"Sign"})
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class SignController {
     private final ResponseService responseService;
     private final SignService signService;
+    private final KakaoService kakaoService;
 
     @ApiOperation(value="로그인", notes = "아이디와 비밀번호로 로그인을 한다.")
     @PostMapping(value = "/login")
@@ -31,7 +29,7 @@ public class SignController {
 
     @ApiOperation(value="회원가입", notes = "회원가입을 한다.")
     @PostMapping(value = "/register")
-    public SingleResult<UserRegisterResponseDto> register (@RequestBody UserRegisterRequestDto requestDto) {
+    public SingleResult<UserRegisterResponseDto> register(@RequestBody UserRegisterRequestDto requestDto) {
         return responseService.handleSingleResult(signService.registerUser(requestDto));
     }
 
@@ -52,5 +50,28 @@ public class SignController {
             @RequestHeader(value="X-AUTH-TOKEN") String token,
             @RequestHeader(value="REFRESH-TOKEN") String refreshToken ) {
         return responseService.handleSingleResult(signService.refreshToken(token, refreshToken));
+    }
+
+    @ApiOperation(value = "소셜 로그인", notes = "소셜 회원 로그인을 한다.")
+    @PostMapping(value = "/social/login/{provider}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "SOCIAL-ACCESS-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    public SingleResult<UserLoginResponseDto> loginByProvider(
+            @RequestHeader("SOCIAL-ACCESS-TOKEN") String accessToken,
+            @PathVariable("provider") String provider) {
+        return responseService.handleSingleResult(signService.loginUserByProvider(accessToken, provider));
+    }
+
+    @ApiOperation(value = "소셜 계정 가입", notes = "소셜 계정 회원가입을 한다.")
+    @PostMapping(value = "/social/register/{provider}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "SOCIAL-ACCESS-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    public SingleResult<UserRegisterResponseDto> registerByProvider(
+            @RequestHeader("SOCIAL-ACCESS-TOKEN") String accessToken,
+            @PathVariable("provider") String provider,
+            @RequestBody UserRegisterByProviderRequestDto requestDto) {
+        return responseService.handleSingleResult(signService.registerUserByProvider(requestDto, accessToken, provider));
     }
 }

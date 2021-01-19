@@ -37,10 +37,10 @@ class UserServiceTest {
         em.persist(region);
         Town town = Town.createTown("UserServiceTest", region);
         em.persist(town);
-        userRepository.save(User.createUser("test1", "1234", "test1", town));
-        userRepository.save(User.createUser("test2", "1234", "test2", town));
-        userRepository.save(User.createUser("test3", "1234", "test3", town));
-        userRepository.save(User.createUser("test4", "1234", "test4", town));
+        userRepository.save(User.createUser("test1", "1234", "test1", town, null));
+        userRepository.save(User.createUser("test2", "1234", "test2", town, null));
+        userRepository.save(User.createUser("test3", "1234", "test3", town, null));
+        userRepository.save(User.createUser("test4", "1234", "test4", town, null));
 
         // when
         List<UserDto> result = userService.findAll();
@@ -57,7 +57,7 @@ class UserServiceTest {
         em.persist(region);
         Town town = Town.createTown("UserServiceTest", region);
         em.persist(town);
-        User user = userRepository.save(User.createUser("test1", "1234", "test1", town));
+        User user = userRepository.save(User.createUser("test1", "1234", "test1", town, null));
         em.flush();
         em.clear();
 
@@ -80,7 +80,7 @@ class UserServiceTest {
         Town nextTown = Town.createTown("UserServiceTest2", region);
         em.persist(curTown);
         em.persist(nextTown);
-        User user = userRepository.save(User.createUser("test1", "1234", "test1", curTown));
+        User user = userRepository.save(User.createUser("test1", "1234", "test1", curTown, null));
         em.flush();
         em.clear();
 

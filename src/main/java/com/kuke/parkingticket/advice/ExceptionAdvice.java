@@ -114,4 +114,17 @@ public class ExceptionAdvice {
         return responseService.handleFailResult(-1015, "해당 메시지를 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(CommunicationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result communicationException() {
+        return responseService.handleFailResult(-1016, "통신 오류가 발생하였습니다.");
+    }
+
+    @ExceptionHandler(InvalidateProviderException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result invalidateProviderException() {
+        return responseService.handleFailResult(-1017, "유효하지 않은 서비스 제공자입니다.");
+    }
+
+
 }

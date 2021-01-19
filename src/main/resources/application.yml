@@ -3,6 +3,14 @@ spring:
     active: local
     include:
       - credential
+  social:
+    kakao:
+      redirect: /social/login/kakao
+      url:
+        login: https://kauth.kakao.com/oauth/authorize
+        token: https://kauth.kakao.com/oauth/token
+        profile: https://kapi.kakao.com/v2/user/me
+
 
 cloud:
   aws:
@@ -14,3 +22,4 @@ cloud:
       auto: false
     credentials:
       instanceProfile: true
+

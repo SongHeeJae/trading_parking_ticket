@@ -60,6 +60,9 @@ dependencies {
 	// mysql
 	runtimeOnly 'mysql:mysql-connector-java'
 
+	// gson
+	implementation 'com.google.code.gson:gson'
+
 
 }
 

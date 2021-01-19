@@ -5,22 +5,16 @@ import com.kuke.parkingticket.common.cache.CacheKey;
 import com.kuke.parkingticket.config.security.JwtTokenProvider;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.entity.User;
-import com.kuke.parkingticket.model.dto.town.TownDto;
-import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
-import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
-import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
-import com.kuke.parkingticket.model.dto.user.UserRegisterResponseDto;
+import com.kuke.parkingticket.model.dto.user.*;
 import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
+import com.kuke.parkingticket.service.social.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import javax.persistence.Access;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +24,7 @@ public class SignService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final TownRepository townRepository;
+    private final KakaoService kakaoService;
     private final RedisTemplate redisTemplate;
 
     @Transactional
@@ -50,7 +45,8 @@ public class SignService {
                         requestDto.getUid(),
                         passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getNickname(),
-                        town));
+                        town,
+                        null));
         return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
     }
 
@@ -76,4 +72,40 @@ public class SignService {
         User user = userRepository.findById(Long.valueOf(jwtTokenProvider.getUserPk(token))).orElseThrow(UserNotFoundException::new);
         user.changeRefreshToken("invalidate");
     }
+
+    @Transactional
+    public UserLoginResponseDto loginUserByProvider(String accessToken, String provider) {
+        String uid = getUidByProvider(accessToken, provider);
+        User user = userRepository.findUserByUidAndProvider(uid, provider).orElseThrow(LoginFailureException::new);
+        user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
+    }
+
+    private String getUidByProvider(String accessToken, String provider) {
+        if(provider.equals("kakao")) {
+            return kakaoService.getKakaoId(accessToken);
+        }
+        throw new InvalidateProviderException();
+    }
+
+    @Transactional
+    public UserRegisterResponseDto registerUserByProvider(UserRegisterByProviderRequestDto requestDto, String accessToken, String provider) {
+        String uid = getUidByProvider(accessToken, provider);
+        validateDuplicateUserByProvider(uid, provider);
+        Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
+        User user = userRepository.save(
+                User.createUser(
+                        uid,
+                        null,
+                        requestDto.getNickname(),
+                        town,
+                        provider));
+        return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
+    }
+
+    private void validateDuplicateUserByProvider(String uid, String provider) {
+        if(userRepository.findUserByUidAndProvider(uid, provider).isPresent())
+            new UserIdAlreadyExistsException();
+    }
+
 }

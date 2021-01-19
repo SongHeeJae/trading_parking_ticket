@@ -28,6 +28,8 @@ public class User extends CommonDateEntity {
     @Column(nullable = false, unique = true, length = 30)
     private String nickname;
 
+    private String provider;
+
     private String refreshToken;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,12 +55,13 @@ public class User extends CommonDateEntity {
     @OneToMany(mappedBy = "seller")
     private List<History> sales = new ArrayList<>(); // 판매 내역
 
-    public static User createUser(String uid, String password, String nickname, Town town) {
+    public static User createUser(String uid, String password, String nickname, Town town, String provider) {
         return User.builder()
                 .uid(uid)
                 .password(password)
                 .nickname(nickname)
                 .town(town)
+                .provider(provider)
                 .build();
     }
 
