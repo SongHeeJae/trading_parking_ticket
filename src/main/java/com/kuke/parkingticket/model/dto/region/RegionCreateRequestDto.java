@@ -1,15 +1,13 @@
 package com.kuke.parkingticket.model.dto.region;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegionDto implements Serializable {
-    private Long Id;
+public class RegionCreateRequestDto {
     private String name;
 }

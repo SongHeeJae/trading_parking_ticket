@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -65,12 +66,14 @@ public class User extends CommonDateEntity {
                 .nickname(nickname)
                 .town(town)
                 .provider(provider)
-                .roles(Arrays.asList(Role.ROLE_NORMAL))
+                .roles(Collections.singletonList(Role.ROLE_NORMAL))
                 .build();
     }
 
     public void addRole(Role role) {
+        ArrayList<Role> roles = new ArrayList<>(this.roles);
         roles.add(role);
+        this.roles = roles;
     }
 
     public void update(String nickname, Town town) {

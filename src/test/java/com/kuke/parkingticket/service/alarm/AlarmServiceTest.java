@@ -90,7 +90,7 @@ class AlarmServiceTest {
         headers.add("token", sender.getToken());
         StompSession session = stompClient
                 .connect(getWsPath(), new WebSocketHttpHeaders() ,headers, new StompSessionHandlerAdapter() {})
-                .get(10, SECONDS);
+                .get(20, SECONDS);
         session.subscribe(WEBSOCKET_TOPIC + receiver.getId(), new DefaultStompFrameHandler());
 
         // when
@@ -99,7 +99,7 @@ class AlarmServiceTest {
 
         // then
         ObjectMapper mapper = new ObjectMapper();
-        String jsonResult = blockingQueue.poll(10, SECONDS);
+        String jsonResult = blockingQueue.poll(20, SECONDS);
         Map<String, String> result = mapper.readValue(jsonResult, Map.class);
         assertThat(result.get("message")).isEqualTo(messageDto.getMessage());
     }

@@ -12,7 +12,6 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -56,7 +55,7 @@ public class RedisConfig {
         cacheConfigurations.put(CacheKey.USER, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.USER_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.TICKET, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.TICKETS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TICKET_EXPIRE_SEC)));
-        cacheConfigurations.put(CacheKey.REGION, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.REGION_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.REGIONS_WITH_TOWNS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.REGIONS_WITH_TOWNS_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.COMMENTS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.COMMENTS_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.SALES_HISTORIES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.SALES_HISTORIES_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.PURCHASE_HISTORIES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.PURCHASE_HISTORIES_EXPIRE_SEC)));
@@ -65,6 +64,8 @@ public class RedisConfig {
         cacheConfigurations.put(CacheKey.SENT_MESSAGES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.SENT_MESSAGES_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.RECEIVED_MESSAGES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.RECEIVED_MESSAGES_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.MESSAGE, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.MESSAGE_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.REGIONS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.REGIONS_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.TOWNS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.TOWNS_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory())

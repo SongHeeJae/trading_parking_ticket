@@ -39,4 +39,14 @@ public class CacheService {
     public void deleteReviewsCache(Long buyerId, Long sellerId) {
         log.debug("CacheService.deleteReviewsCache - buyerId {}, sellerId {}", buyerId, sellerId);
     }
+
+
+    @Caching(evict = {
+            @CacheEvict(value = CacheKey.REGIONS),
+            @CacheEvict(value = CacheKey.REGIONS_WITH_TOWNS),
+            @CacheEvict(value = CacheKey.TOWNS, key = "#regionId", allEntries = true)
+    })
+    public void deleteTownsCache(Long regionId) {
+        log.debug("CacheService.deleteTownsCache - regionId {}", regionId);
+    }
 }

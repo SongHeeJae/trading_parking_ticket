@@ -18,8 +18,12 @@ public class CacheKey {
     public static final int TYPING_REVIEWS_EXPIRE_SEC = 60 * 3; // 3 minuets
     public static final String TYPED_REVIEWS = "typed_reviews";
     public static final int TYPED_REVIEWS_EXPIRE_SEC = 60 * 3; // 3 minuets
-    public static final String REGION = "region";
-    public static final int REGION_EXPIRE_SEC = 60 * 10; // 10 minutes
+    public static final String REGIONS_WITH_TOWNS = "regions_with_towns";
+    public static final int REGIONS_WITH_TOWNS_EXPIRE_SEC = 60 * 10; // 10 minutes
+    public static final String REGIONS = "regions";
+    public static final int REGIONS_EXPIRE_SEC = 60 * 10; // 10 minutes
+    public static final String TOWNS = "towns";
+    public static final int TOWNS_EXPIRE_SEC = 60 * 10; // 10 minutes
     public static final String SENT_MESSAGES = "sent_messages";
     public static final int SENT_MESSAGES_EXPIRE_SEC = 60 * 3; // 3 minutes
     public static final String RECEIVED_MESSAGES = "received_messages";

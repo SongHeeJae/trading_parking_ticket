@@ -53,7 +53,7 @@ public class UserController {
     @ApiOperation(value = "회원 삭제", notes = "회원을 삭제한다.")
     @DeleteMapping(value = "/users/{userId}")
     public Result deleteUser(@PathVariable("userId") Long userId) {
-        userRepository.deleteById(userId);
+        userService.deleteUser(userId);
         return responseService.handleSuccessResult();
     }
 

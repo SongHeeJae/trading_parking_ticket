@@ -42,6 +42,11 @@ public class UserService {
         return convertUserToDto(user);
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
     private UserDto convertUserToDto(User user) {
         return new UserDto(user.getId(), user.getUid(), user.getNickname(), new TownDto(user.getTown().getId(), user.getTown().getName()), user.getCreatedAt(), user.getModifiedAt());
     }
