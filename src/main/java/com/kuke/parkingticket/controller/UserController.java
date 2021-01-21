@@ -38,17 +38,16 @@ public class UserController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "0access-token", required = true, dataType = "String", paramType = "header")
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "회원 정보 수정", notes = "회원 정보를 수정한다.")
     @PutMapping(value = "/users/{userId}")
-    public SingleResult<UserDto> updateUser(@PathVariable("" +
-            "userId") Long userId, @RequestBody UserUpdateRequestDto requestDto) {
+    public SingleResult<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto requestDto) {
         return responseService.handleSingleResult(userService.updateUser(userId, requestDto));
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "0access-token", required = true, dataType = "String", paramType = "header")
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "회원 삭제", notes = "회원을 삭제한다.")
     @DeleteMapping(value = "/users/{userId}")

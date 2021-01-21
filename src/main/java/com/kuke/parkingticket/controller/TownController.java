@@ -31,7 +31,7 @@ public class TownController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "0access-token", required = true, dataType = "String", paramType = "header")
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "동네 등록", notes = "동네를 등록한다.")
     @PostMapping(value = "/towns")
@@ -40,7 +40,7 @@ public class TownController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "0access-token", required = true, dataType = "String", paramType = "header")
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "동네 삭제", notes = "동네를 삭제한다.")
     @DeleteMapping(value = "/towns/{townId}")
