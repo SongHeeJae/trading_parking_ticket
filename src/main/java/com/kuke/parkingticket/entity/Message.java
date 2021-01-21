@@ -1,13 +1,13 @@
 package com.kuke.parkingticket.entity;
 
 import com.kuke.parkingticket.entity.date.CreatedDateEntity;
+import com.kuke.parkingticket.model.dto.message.MessageCreateRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Message extends CreatedDateEntity {
@@ -30,11 +30,12 @@ public class Message extends CreatedDateEntity {
     private ReadingStatus readingStatus;
 
     public static Message createMessage(User sender, User receiver, String message) {
-        return Message.builder().sender(sender)
-                .receiver(receiver)
-                .message(message)
-                .readingStatus(ReadingStatus.N)
-                .build();
+        Message msg = new Message();
+        msg.sender = sender;
+        msg.receiver = receiver;
+        msg.message = message;
+        msg.readingStatus = ReadingStatus.N;
+        return msg;
     }
 
     public void changeReadingStatus(ReadingStatus readingStatus) {

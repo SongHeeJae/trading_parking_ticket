@@ -6,7 +6,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image {
@@ -23,9 +22,10 @@ public class Image {
     private Ticket ticket;
 
     public static Image createImage(String path, Ticket ticket) {
-        return Image.builder()
-                .path(path)
-                .ticket(ticket).build();
+        Image image = new Image();
+        image.path = path;
+        image.ticket = ticket;
+        return image;
     }
 
 

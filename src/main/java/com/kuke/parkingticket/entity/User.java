@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User extends CommonDateEntity {
@@ -36,38 +35,32 @@ public class User extends CommonDateEntity {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "writer")
     private List<Ticket> tickets = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "buyer")
     private List<Review> typingReviews = new ArrayList<>(); // 작성한 리뷰
 
-    @Builder.Default
     @OneToMany(mappedBy = "seller")
     private List<Review> typedReviews = new ArrayList<>(); // 본인에게 작성된 리뷰
 
-    @Builder.Default
     @OneToMany(mappedBy = "buyer")
     private List<History> purchases = new ArrayList<>(); // 구매 내역
 
-    @Builder.Default
     @OneToMany(mappedBy = "seller")
     private List<History> sales = new ArrayList<>(); // 판매 내역
 
     public static User createUser(String uid, String password, String nickname, Town town, String provider) {
-        return User.builder()
-                .uid(uid)
-                .password(password)
-                .nickname(nickname)
-                .town(town)
-                .provider(provider)
-                .roles(Collections.singletonList(Role.ROLE_NORMAL))
-                .build();
+        User user = new User();
+        user.uid = uid;
+        user.password = password;
+        user.nickname = nickname;
+        user.town = town;
+        user.provider = provider;
+        user.roles = Collections.singletonList(Role.ROLE_NORMAL);
+        return user;
     }
 
     public void addRole(Role role) {

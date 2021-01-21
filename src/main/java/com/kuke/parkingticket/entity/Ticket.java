@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class Ticket extends CommonDateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +32,7 @@ public class Ticket extends CommonDateEntity {
     private int price;
 
     @Column(nullable = false)
-    @Builder.Default
-    private int view = 0; // 조회수
+    private int view; // 조회수
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
@@ -56,29 +54,29 @@ public class Ticket extends CommonDateEntity {
     @Enumerated(EnumType.STRING)
     private TicketStatus ticketStatus;
 
-    @Builder.Default
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
-    @Builder.Default
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     public static Ticket createTicket(String title, String content, String address, int price, User writer,
                                Town town, PlaceType placeType, TermType termType, TicketStatus ticketStatus,
                                       LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return Ticket.builder()
-                .title(title)
-                .content(content)
-                .address(address)
-                .price(price)
-                .writer(writer)
-                .town(town)
-                .placeType(placeType)
-                .termType(termType)
-                .ticketStatus(ticketStatus)
-                .startDateTime(startDateTime)
-                .endDateTime(endDateTime).build();
+        Ticket ticket = new Ticket();
+        ticket.title = title;
+        ticket.content = content;
+        ticket.address = address;
+        ticket.price = price;
+        ticket.writer = writer;
+        ticket.town = town;
+        ticket.placeType = placeType;
+        ticket.termType = termType;
+        ticket.ticketStatus = ticketStatus;
+        ticket.startDateTime = startDateTime;
+        ticket.endDateTime = endDateTime;
+        ticket.view = 0;
+        return ticket;
     }
 
     public void addComment(Comment comment) {

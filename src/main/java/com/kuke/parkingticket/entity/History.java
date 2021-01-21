@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class History extends CreatedDateEntity {
 
     @Id
@@ -41,12 +40,13 @@ public class History extends CreatedDateEntity {
     private LocalDateTime endDateTime;
 
     public static History createHistory(int price, Ticket ticket, User buyer, User seller, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return History.builder()
-                .price(price)
-                .ticket(ticket)
-                .buyer(buyer)
-                .seller(seller)
-                .startDateTime(startDateTime)
-                .endDateTime(endDateTime).build();
+        History history = new History();
+        history.price = price;
+        history.ticket = ticket;
+        history.buyer = buyer;
+        history.seller = seller;
+        history.startDateTime = startDateTime;
+        history.endDateTime = endDateTime;
+        return history;
     }
 }

@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class Town {
 
     @Id
@@ -23,8 +22,9 @@ public class Town {
     private Region region;
 
     public static Town createTown(String name, Region region) {
-        return Town.builder()
-                .name(name)
-                .region(region).build();
+        Town town = new Town();
+        town.name = name;
+        town.region = region;
+        return town;
     }
 }

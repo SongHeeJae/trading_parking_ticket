@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Review extends CreatedDateEntity {
 
@@ -38,12 +37,13 @@ public class Review extends CreatedDateEntity {
     private Ticket ticket;
 
     public static Review createReview(String content, double score, User buyer, User seller, Ticket ticket) {
-        return Review.builder()
-                .content(content)
-                .score(score)
-                .buyer(buyer)
-                .seller(seller)
-                .ticket(ticket).build();
+        Review review = new Review();
+        review.content = content;
+        review.score = score;
+        review.buyer = buyer;
+        review.seller = seller;
+        review.ticket = ticket;
+        return review;
     }
 
 

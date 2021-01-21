@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 public class Comment extends CreatedDateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,18 +37,17 @@ public class Comment extends CreatedDateEntity {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "parent",
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 
     public static Comment createComment(String content, Ticket ticket, User writer, Comment parent) {
-        return Comment.builder()
-                .content(content)
-                .ticket(ticket)
-                .writer(writer)
-                .parent(parent)
-                .isDeleted(DeleteStatus.N).build();
+        Comment comment = new Comment();
+        comment.content = content;
+        comment.ticket = ticket;
+        comment.writer = writer;
+        comment.parent = parent;
+        comment.isDeleted = DeleteStatus.N;
+        return comment;
     }
 
     public void changeDeletedStatus(DeleteStatus deleteStatus) {

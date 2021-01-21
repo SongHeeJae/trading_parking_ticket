@@ -9,7 +9,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Region {
     @Id
@@ -20,12 +19,12 @@ public class Region {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Builder.Default
     @OneToMany(mappedBy = "region")
     private List<Town> towns = new ArrayList<>();
 
     public static Region createRegion(String name) {
-        return Region.builder()
-                .name(name).build();
+        Region region = new Region();
+        region.name = name;
+        return region;
     }
 }

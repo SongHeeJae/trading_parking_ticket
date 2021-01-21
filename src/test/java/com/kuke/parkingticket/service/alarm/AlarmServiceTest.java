@@ -1,6 +1,8 @@
 package com.kuke.parkingticket.service.alarm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.kuke.parkingticket.entity.Region;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.model.dto.message.MessageCreateRequestDto;
@@ -31,6 +33,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -52,6 +55,7 @@ class AlarmServiceTest {
     @Autowired TownRepository townRepository;
     @Autowired SignService signService;
     @Autowired MessageService messageService;
+    @Autowired Gson gson;
     @LocalServerPort Integer port;
 
     @BeforeEach
@@ -90,7 +94,7 @@ class AlarmServiceTest {
         headers.add("token", sender.getToken());
         StompSession session = stompClient
                 .connect(getWsPath(), new WebSocketHttpHeaders() ,headers, new StompSessionHandlerAdapter() {})
-                .get(20, SECONDS);
+                .get(15, SECONDS);
         session.subscribe(WEBSOCKET_TOPIC + receiver.getId(), new DefaultStompFrameHandler());
 
         // when
@@ -98,9 +102,8 @@ class AlarmServiceTest {
         MessageDto messageDto = messageService.createMessage(requestDto);
 
         // then
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonResult = blockingQueue.poll(20, SECONDS);
-        Map<String, String> result = mapper.readValue(jsonResult, Map.class);
+        String jsonResult = blockingQueue.poll(15, SECONDS);
+        Map<String, String> result = gson.fromJson(jsonResult, new HashMap().getClass());
         assertThat(result.get("message")).isEqualTo(messageDto.getMessage());
     }
 
