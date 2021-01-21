@@ -1,9 +1,6 @@
 package com.kuke.parkingticket.config.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -34,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt로 인증하므로 세션 미사용
                 .and()
                     .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
+                        .antMatchers(HttpMethod.POST, "/api/regions", "/api/towns").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.PUT, "/api/regions", "/api/towns").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.DELETE, "/api/regions", "/api/towns").hasRole("ADMIN")
                         .antMatchers("/api/sign/", "/api/sign/**").permitAll()
                         .antMatchers(HttpMethod.GET,"/exception", "/exception/**", "/api/users",
                                 "/api/users/**", "/api/regions", "/api/tickets", "/api/tickets/**",
@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/api/histories", "/api/histories/**").permitAll()
                         .antMatchers("/alarm/stomp", "/alarm/stomp/**", "/ws-stomp", "/ws-stomp/**").permitAll() // stomp
                         .antMatchers("/social", "/social/**").permitAll() // social login view test
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole("USER")
                 .and()
                     .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and()

@@ -37,6 +37,14 @@ public class SignService {
     }
 
     @Transactional
+    public UserLoginResponseDto loginUserByProvider(String accessToken, String provider) {
+        String uid = getUidByProvider(accessToken, provider);
+        User user = userRepository.findUserByUidAndProvider(uid, provider).orElseThrow(LoginFailureException::new);
+        user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
+    }
+
+    @Transactional
     public UserRegisterResponseDto registerUser(UserRegisterRequestDto requestDto) {
         validateDuplicateUser(requestDto.getUid(), requestDto.getNickname());
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
@@ -47,6 +55,21 @@ public class SignService {
                         requestDto.getNickname(),
                         town,
                         null));
+        return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
+    }
+
+    @Transactional
+    public UserRegisterResponseDto registerUserByProvider(UserRegisterByProviderRequestDto requestDto, String accessToken, String provider) {
+        String uid = getUidByProvider(accessToken, provider);
+        validateDuplicateUserByProvider(uid, provider);
+        Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
+        User user = userRepository.save(
+                User.createUser(
+                        uid,
+                        null,
+                        requestDto.getNickname(),
+                        town,
+                        provider));
         return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
     }
 
@@ -73,34 +96,11 @@ public class SignService {
         user.changeRefreshToken("invalidate");
     }
 
-    @Transactional
-    public UserLoginResponseDto loginUserByProvider(String accessToken, String provider) {
-        String uid = getUidByProvider(accessToken, provider);
-        User user = userRepository.findUserByUidAndProvider(uid, provider).orElseThrow(LoginFailureException::new);
-        user.changeRefreshToken(jwtTokenProvider.createRefreshToken());
-        return new UserLoginResponseDto(user.getId(), jwtTokenProvider.createToken(String.valueOf(user.getId())), user.getRefreshToken());
-    }
-
     private String getUidByProvider(String accessToken, String provider) {
         if(provider.equals("kakao")) {
             return kakaoService.getKakaoId(accessToken);
         }
         throw new InvalidateProviderException();
-    }
-
-    @Transactional
-    public UserRegisterResponseDto registerUserByProvider(UserRegisterByProviderRequestDto requestDto, String accessToken, String provider) {
-        String uid = getUidByProvider(accessToken, provider);
-        validateDuplicateUserByProvider(uid, provider);
-        Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
-        User user = userRepository.save(
-                User.createUser(
-                        uid,
-                        null,
-                        requestDto.getNickname(),
-                        town,
-                        provider));
-        return new UserRegisterResponseDto(user.getId(), user.getUid(), user.getNickname());
     }
 
     private void validateDuplicateUserByProvider(String uid, String provider) {

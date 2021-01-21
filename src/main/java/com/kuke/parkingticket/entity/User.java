@@ -5,9 +5,7 @@ import com.kuke.parkingticket.entity.date.CommonDateEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -34,6 +32,11 @@ public class User extends CommonDateEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Town town;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private List<Role> roles = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "writer")
@@ -62,7 +65,12 @@ public class User extends CommonDateEntity {
                 .nickname(nickname)
                 .town(town)
                 .provider(provider)
+                .roles(Arrays.asList(Role.ROLE_NORMAL))
                 .build();
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
     }
 
     public void update(String nickname, Town town) {
