@@ -8,6 +8,7 @@ import com.kuke.parkingticket.entity.Image;
 import com.kuke.parkingticket.entity.Ticket;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.entity.User;
+import com.kuke.parkingticket.model.dto.image.ImageDto;
 import com.kuke.parkingticket.model.dto.ticket.*;
 import com.kuke.parkingticket.model.dto.town.TownDto;
 import com.kuke.parkingticket.repository.ticket.TicketRepository;
@@ -62,6 +63,7 @@ public class TicketService {
         for (int i=0; i<requestDto.getFiles().size(); i++) {
             ticket.addImage(Image.createImage(
                     fileService.upload(requestDto.getFiles().get(i), generateImageName(requestDto.getFiles().get(i), i, user.getId())),
+                    fileService.getBaseUrl(),
                     ticket));
         }
         ticketRepository.save(ticket);
@@ -86,6 +88,7 @@ public class TicketService {
         for (int i=0; i<newImages.size(); i++) {
             ticket.addImage(Image.createImage(
                     fileService.upload(newImages.get(i), generateImageName(newImages.get(i), i, ticket.getWriter().getId())),
+                    fileService.getBaseUrl(),
                     ticket));
         }
 
@@ -107,14 +110,13 @@ public class TicketService {
 
 
     private TicketDto convertTicketToDto(Ticket ticket) {
-        String baseUrl = fileService.getBaseUrl();
         return new TicketDto(ticket.getId(), ticket.getTitle(), ticket.getContent(), ticket.getPrice(),
                 ticket.getView(), ticket.getAddress(), ticket.getStartDateTime(), ticket.getEndDateTime(),
                 ticket.getTermType(), ticket.getTicketStatus(), ticket.getPlaceType(),
                 ticket.getWriter().getId(),
                 ticket.getWriter().getNickname(),
                 new TownDto(ticket.getTown().getId(), ticket.getTown().getName()),
-                ticket.getImages().stream().map(i -> baseUrl + i.getPath()).collect(Collectors.toList()),
+                ticket.getImages().stream().map(i -> new ImageDto(i.getId(), i.getPath(), i.getBasePath())).collect(Collectors.toList()),
                 ticket.getCreatedAt(), ticket.getModifiedAt());
     }
 
