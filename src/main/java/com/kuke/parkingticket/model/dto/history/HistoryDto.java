@@ -1,5 +1,6 @@
 package com.kuke.parkingticket.model.dto.history;
 
+import com.kuke.parkingticket.entity.History;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,20 @@ public class HistoryDto implements Serializable {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private LocalDateTime createdAt;
+
+    public static HistoryDto convertHistoryToDto(History history) {
+        return new HistoryDto(
+                history.getId(),
+                history.getPrice(),
+                history.getTicket().getId(),
+                history.getTicket().getAddress(),
+                history.getBuyer().getId(),
+                history.getBuyer().getNickname(),
+                history.getSeller().getId(),
+                history.getSeller().getNickname(),
+                history.getStartDateTime(),
+                history.getEndDateTime(),
+                history.getCreatedAt()
+        );
+    }
 }

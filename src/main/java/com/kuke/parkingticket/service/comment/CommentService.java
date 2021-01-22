@@ -48,7 +48,7 @@ public class CommentService {
                         requestDto.getParentId() != null ?
                                 commentRepository.findById(requestDto.getParentId()).orElseThrow(CommentNotFoundException::new) : null)
         );
-        return convertCommentToDto(comment);
+        return CommentDto.convertCommentToDto(comment);
     }
 
     @Transactional
@@ -62,8 +62,6 @@ public class CommentService {
         }
     }
 
-
-
     private Comment getDeletableAncestorComment(Comment comment) {
         Comment parent = comment.getParent();
         if(parent != null && parent.getChildren().size() == 1 && parent.getIsDeleted() == DeleteStatus.Y)
@@ -72,17 +70,11 @@ public class CommentService {
     }
 
 
-    private CommentDto convertCommentToDto(Comment comment) {
-        return comment.getIsDeleted() == DeleteStatus.Y ?
-                new CommentDto(comment.getId(), "삭제된 댓글입니다.", null, null) :
-                new CommentDto(comment.getId(), comment.getContent(), comment.getWriter().getId(), comment.getWriter().getNickname());
-    }
-
     private List<CommentDto> convertNestedStructure(List<Comment> comments) {
         List<CommentDto> result = new ArrayList<>();
         Map<Long, CommentDto> map = new HashMap<>();
         comments.stream().forEach(c -> {
-            CommentDto dto = convertCommentToDto(c);
+            CommentDto dto = CommentDto.convertCommentToDto(c);
             map.put(dto.getId(), dto);
             if(c.getParent() != null) map.get(c.getParent().getId()).getChildren().add(dto);
             else result.add(dto);

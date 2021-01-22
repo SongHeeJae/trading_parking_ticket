@@ -40,7 +40,7 @@ public class HistoryService {
     @Cacheable(value = CacheKey.SALES_HISTORIES, key = "{#userId, #limit, #lastHistoryId}")
     public Slice<HistoryDto> findSalesHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextSalesHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(h -> convertHistoryToDto(h));
+                .map(h -> HistoryDto.convertHistoryToDto(h));
     }
 
     /**
@@ -49,7 +49,7 @@ public class HistoryService {
     @Cacheable(value = CacheKey.PURCHASE_HISTORIES, key = "{#userId, #limit, #lastHistoryId}")
     public Slice<HistoryDto> findPurchaseHistoriesByUserId(Long userId, Long lastHistoryId, int limit) {
         return historyRepository.findNextPurchaseHistoriesByUserIdOrderByCreatedAt(userId, lastHistoryId != null ? lastHistoryId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(h -> convertHistoryToDto(h));
+                .map(h -> HistoryDto.convertHistoryToDto(h));
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class HistoryService {
                 requestDto.getStartDateTime(),
                 requestDto.getEndDateTime()
         ));
-        return convertHistoryToDto(history);
+        return HistoryDto.convertHistoryToDto(history);
     }
 
     @Transactional
@@ -77,19 +77,4 @@ public class HistoryService {
         historyRepository.deleteById(historyId);
     }
 
-    private HistoryDto convertHistoryToDto(History history) {
-        return new HistoryDto(
-              history.getId(),
-              history.getPrice(),
-              history.getTicket().getId(),
-              history.getTicket().getAddress(),
-              history.getBuyer().getId(),
-                history.getBuyer().getNickname(),
-                history.getSeller().getId(),
-                history.getSeller().getNickname(),
-                history.getStartDateTime(),
-                history.getEndDateTime(),
-                history.getCreatedAt()
-        );
-    }
 }

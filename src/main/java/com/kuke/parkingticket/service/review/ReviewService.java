@@ -39,7 +39,7 @@ public class ReviewService {
     @Cacheable(value = CacheKey.TYPING_REVIEWS, key = "{#userId, #limit, #lastReviewId}")
     public Slice<ReviewDto> findTypingReviewsByUserId(Long userId, Long lastReviewId, int limit) {
         return reviewRepository.findNextTypingReviewsByUserIdOrderByCreatedAt(userId, lastReviewId != null ? lastReviewId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(r -> convertReviewToDto(r));
+                .map(r -> ReviewDto.convertReviewToDto(r));
     }
 
     /**
@@ -48,7 +48,7 @@ public class ReviewService {
     @Cacheable(value = CacheKey.TYPED_REVIEWS, key = "{#userId, #limit, #lastReviewId}")
     public Slice<ReviewDto> findTypedReviewsByUserId(Long userId, Long lastReviewId, int limit) {
         return reviewRepository.findNextTypedReviewsByUserIdOrderByCreatedAt(userId, lastReviewId != null ? lastReviewId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(r -> convertReviewToDto(r));
+                .map(r -> ReviewDto.convertReviewToDto(r));
     }
 
 
@@ -65,7 +65,7 @@ public class ReviewService {
                         userRepository.findById(requestDto.getBuyerId()).orElseThrow(UserNotFoundException::new),
                         userRepository.findById(requestDto.getSellerId()).orElseThrow(UserNotFoundException::new),
                         ticketRepository.findById(requestDto.getTicketId()).orElseThrow(TicketNotFoundException::new)));
-        return convertReviewToDto(review);
+        return ReviewDto.convertReviewToDto(review);
     }
 
     @Transactional
@@ -73,12 +73,6 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
         cacheService.deleteReviewsCache(review.getBuyer().getId(), review.getSeller().getId());
         reviewRepository.delete(review);
-    }
-
-
-    private ReviewDto convertReviewToDto(Review review) {
-        return new ReviewDto(review.getId(), review.getContent(), review.getScore(), review.getBuyer().getId(), review.getBuyer().getNickname(),
-                review.getSeller().getId(), review.getSeller().getNickname(), review.getTicket().getId(), review.getCreatedAt());
     }
 
     private void validateDuplicateReviewBySameUser(Long ticketId, Long buyerId) {

@@ -40,7 +40,7 @@ public class MessageService {
     @Cacheable(value = CacheKey.SENT_MESSAGES, key = "{#userId, #limit, #lastMessageId}")
     public Slice<MessageDto> findSentMessagesByUserId(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findNextSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> convertMessageToDto(m));
+                .map(m -> MessageDto.convertMessageToDto(m));
     }
 
     /**
@@ -49,7 +49,7 @@ public class MessageService {
     @Cacheable(value = CacheKey.RECEIVED_MESSAGES, key = "{#userId, #limit, #lastMessageId}")
     public Slice<MessageDto> findReceivedMessagesByUserId(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findNextReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> convertMessageToDto(m));
+                .map(m -> MessageDto.convertMessageToDto(m));
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class MessageService {
     public MessageDto readMessage(Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
         message.changeReadingStatus(ReadingStatus.Y);
-        return convertMessageToDto(message);
+        return MessageDto.convertMessageToDto(message);
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class MessageService {
                         userRepository.findById(requestDto.getReceiverId()).orElseThrow(UserNotFoundException::new),
                         requestDto.getMessage()
                 ));
-        MessageDto messageDto = convertMessageToDto(message);
+        MessageDto messageDto = MessageDto.convertMessageToDto(message);
         alarmService.alarmByMessage(messageDto);
         return messageDto;
     }
@@ -83,12 +83,5 @@ public class MessageService {
         cacheService.deleteMessagesCache(messageId, message.getSender().getId(), message.getReceiver().getId());
         messageRepository.delete(message);
     }
-
-    private MessageDto convertMessageToDto(Message message) {
-        return new MessageDto(message.getId(), message.getSender().getId(), message.getSender().getNickname(),
-                message.getReceiver().getId(), message.getReceiver().getNickname(), message.getMessage(), message.getReadingStatus(),
-                message.getCreatedAt());
-    }
-
 
 }

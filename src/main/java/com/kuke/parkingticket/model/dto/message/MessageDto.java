@@ -1,5 +1,6 @@
 package com.kuke.parkingticket.model.dto.message;
 
+import com.kuke.parkingticket.entity.Message;
 import com.kuke.parkingticket.entity.ReadingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,4 +21,10 @@ public class MessageDto implements Serializable {
     private String message;
     private ReadingStatus readingStatus;
     LocalDateTime createdAt;
+
+    public static MessageDto convertMessageToDto(Message message) {
+        return new MessageDto(message.getId(), message.getSender().getId(), message.getSender().getNickname(),
+                message.getReceiver().getId(), message.getReceiver().getNickname(), message.getMessage(), message.getReadingStatus(),
+                message.getCreatedAt());
+    }
 }

@@ -25,15 +25,14 @@ public class RegionService {
 
     @Cacheable(value = CacheKey.REGIONS_WITH_TOWNS, unless = "#result == null")
     public List<RegionWithTownDto> findAllRegionsWithTowns() {
-        return regionRepository.findAll().stream().map(r ->
-            new RegionWithTownDto(r.getId(), r.getName(), r.getTowns().stream().map(t -> new TownDto(t.getId(), t.getName())).collect(Collectors.toList()))
-        ).collect(Collectors.toList());
+        return regionRepository.findAll().stream().map(r -> RegionWithTownDto.convertRegionToDto(r))
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = CacheKey.REGIONS, unless = "#result == null")
     public List<RegionDto> findAllRegions() {
         return regionRepository.findAll().stream().map(r ->
-                new RegionDto(r.getId(), r.getName())).collect(Collectors.toList());
+                RegionDto.convertRegionToDto(r)).collect(Collectors.toList());
     }
 
     @Transactional
@@ -44,7 +43,7 @@ public class RegionService {
     public RegionDto createRegion(RegionCreateRequestDto requestDto) {
         Region region = regionRepository.save(
                 Region.createRegion(requestDto.getName()));
-        return new RegionDto(region.getId(), region.getName());
+        return RegionDto.convertRegionToDto(region);
     }
 
     @Transactional

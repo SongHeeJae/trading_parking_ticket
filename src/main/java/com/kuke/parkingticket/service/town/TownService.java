@@ -36,7 +36,7 @@ public class TownService {
     @Cacheable(value = CacheKey.TOWNS, key="#regionId", unless = "#result == null")
     public List<TownDto> findTownsByRegionId(Long regionId) {
         Region region = regionRepository.findById(regionId).orElseThrow(RegionNotFoundException::new);
-        return townRepository.findByRegion(region).stream().map(t -> convertTownToDto(t)).collect(Collectors.toList());
+        return townRepository.findByRegion(region).stream().map(t -> TownDto.convertTownToDto(t)).collect(Collectors.toList());
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class TownService {
         Town town = townRepository.save(
                 Town.createTown(requestDto.getName(),
                         regionRepository.findById(requestDto.getRegionId()).orElseThrow(RegionNotFoundException::new)));
-        return convertTownToDto(town);
+        return TownDto.convertTownToDto(town);
     }
 
     @Transactional
@@ -57,9 +57,5 @@ public class TownService {
         Town town = townRepository.findById(townId).orElseThrow(TownNotFoundException::new);
         cacheService.deleteTownsCache(town.getRegion().getId());
         townRepository.delete(town);
-    }
-
-    private TownDto convertTownToDto(Town t) {
-        return new TownDto(t.getId(), t.getName());
     }
 }

@@ -26,11 +26,11 @@ public class UserService {
 
     public List<UserDto> findAll() {
         return userRepository.findAllWithTown().stream()
-            .map(u -> convertUserToDto(u)).collect(Collectors.toList());
+            .map(u -> UserDto.convertUserToDto(u)).collect(Collectors.toList());
     }
 
     public UserDto findUser(Long userId) {
-        return convertUserToDto(userRepository.findUser(userId).orElseThrow(UserNotFoundException::new));
+        return UserDto.convertUserToDto(userRepository.findUser(userId).orElseThrow(UserNotFoundException::new));
     }
 
     @Transactional
@@ -39,16 +39,12 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Town town = townRepository.findById(requestDto.getTownId()).orElseThrow(TownNotFoundException::new);
         user.update(requestDto.getNickname(), town);
-        return convertUserToDto(user);
+        return UserDto.convertUserToDto(user);
     }
 
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
-    }
-
-    private UserDto convertUserToDto(User user) {
-        return new UserDto(user.getId(), user.getUid(), user.getNickname(), new TownDto(user.getTown().getId(), user.getTown().getName()), user.getCreatedAt(), user.getModifiedAt());
     }
 
     private void validateDuplicateUserNickname(String nickname) {

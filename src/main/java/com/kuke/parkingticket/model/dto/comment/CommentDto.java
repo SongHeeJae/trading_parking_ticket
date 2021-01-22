@@ -1,5 +1,7 @@
 package com.kuke.parkingticket.model.dto.comment;
 
+import com.kuke.parkingticket.entity.Comment;
+import com.kuke.parkingticket.entity.DeleteStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,5 +29,11 @@ public class CommentDto implements Serializable {
         this.content = content;
         this.userId = userId;
         this.nickname = nickname;
+    }
+
+    public static CommentDto convertCommentToDto(Comment comment) {
+        return comment.getIsDeleted() == DeleteStatus.Y ?
+                new CommentDto(comment.getId(), "삭제된 댓글입니다.", null, null) :
+                new CommentDto(comment.getId(), comment.getContent(), comment.getWriter().getId(), comment.getWriter().getNickname());
     }
 }

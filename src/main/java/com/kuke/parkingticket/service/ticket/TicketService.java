@@ -67,7 +67,7 @@ public class TicketService {
                     ticket));
         }
         ticketRepository.save(ticket);
-        return convertTicketToDto(ticket);
+        return TicketDto.convertTicketToDto(ticket);
     }
 
     private String generateImageName(MultipartFile file, int idx, Long id) {
@@ -105,19 +105,7 @@ public class TicketService {
     public TicketDto readTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findTicketByIdWithWriterAndTown(ticketId).orElseThrow(TicketNotFoundException::new);
         ticket.addView();
-        return convertTicketToDto(ticket);
-    }
-
-
-    private TicketDto convertTicketToDto(Ticket ticket) {
-        return new TicketDto(ticket.getId(), ticket.getTitle(), ticket.getContent(), ticket.getPrice(),
-                ticket.getView(), ticket.getAddress(), ticket.getStartDateTime(), ticket.getEndDateTime(),
-                ticket.getTermType(), ticket.getTicketStatus(), ticket.getPlaceType(),
-                ticket.getWriter().getId(),
-                ticket.getWriter().getNickname(),
-                new TownDto(ticket.getTown().getId(), ticket.getTown().getName()),
-                ticket.getImages().stream().map(i -> new ImageDto(i.getId(), i.getPath(), i.getBasePath())).collect(Collectors.toList()),
-                ticket.getCreatedAt(), ticket.getModifiedAt());
+        return TicketDto.convertTicketToDto(ticket);
     }
 
     @Transactional
