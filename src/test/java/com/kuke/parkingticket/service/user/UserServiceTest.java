@@ -1,19 +1,32 @@
 package com.kuke.parkingticket.service.user;
 
+import com.kuke.parkingticket.TestConfig;
 import com.kuke.parkingticket.entity.Region;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.entity.User;
 import com.kuke.parkingticket.model.dto.user.UserDto;
 import com.kuke.parkingticket.model.dto.user.UserUpdateRequestDto;
+import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import java.util.List;
@@ -26,17 +39,15 @@ class UserServiceTest {
 
     @Autowired UserRepository userRepository;
     @Autowired TownRepository townRepository;
-    @Autowired EntityManager em;
+    @Autowired RegionRepository regionRepository;
     @Autowired UserService userService;
 
     @Test
     public void findAllTest() {
 
         // given
-        Region region = Region.createRegion("UserServiceTest");
-        em.persist(region);
-        Town town = Town.createTown("UserServiceTest", region);
-        em.persist(town);
+        Region region = regionRepository.save(Region.createRegion("UserServiceTest"));
+        Town town = townRepository.save(Town.createTown("UserServiceTest", region));
         userRepository.save(User.createUser("test1", "1234", "test1", town, null));
         userRepository.save(User.createUser("test2", "1234", "test2", town, null));
         userRepository.save(User.createUser("test3", "1234", "test3", town, null));
@@ -54,12 +65,9 @@ class UserServiceTest {
 
         // given
         Region region = Region.createRegion("UserServiceTest");
-        em.persist(region);
-        Town town = Town.createTown("UserServiceTest", region);
-        em.persist(town);
+        regionRepository.save(region);
+        Town town = townRepository.save(Town.createTown("UserServiceTest", region));
         User user = userRepository.save(User.createUser("test1", "1234", "test1", town, null));
-        em.flush();
-        em.clear();
 
         // when
         UserDto result = userService.findUser(user.getId());
@@ -74,21 +82,14 @@ class UserServiceTest {
     @Test
     public void updateUserTest() {
         // given
-        Region region = Region.createRegion("UserServiceTest");
-        em.persist(region);
-        Town curTown = Town.createTown("UserServiceTest1", region);
-        Town nextTown = Town.createTown("UserServiceTest2", region);
-        em.persist(curTown);
-        em.persist(nextTown);
+        Region region = regionRepository.save(Region.createRegion("UserServiceTest"));
+        Town curTown = townRepository.save(Town.createTown("UserServiceTest1", region));
+        Town nextTown = townRepository.save(Town.createTown("UserServiceTest2", region));
+        String nextNickname = "test2";
         User user = userRepository.save(User.createUser("test1", "1234", "test1", curTown, null));
-        em.flush();
-        em.clear();
 
         // when
-        String nextNickname = "test2";
         userService.updateUser(user.getId(), new UserUpdateRequestDto(nextNickname, nextTown.getId()));
-        em.flush();
-        em.clear();
 
         // then
         UserDto result = userService.findUser(user.getId());

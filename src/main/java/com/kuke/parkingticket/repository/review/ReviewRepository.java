@@ -7,10 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface ReviewRepository extends JpaRepository<Review, Long>, CustomReviewRepository {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 해당 유저가 작성한 리뷰
     @Query("select r from Review r join fetch r.seller join fetch r.buyer " +

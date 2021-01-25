@@ -8,8 +8,10 @@ import com.kuke.parkingticket.model.dto.review.ReviewCreateRequestDto;
 import com.kuke.parkingticket.model.dto.review.ReviewDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
 import com.kuke.parkingticket.repository.comment.CommentRepository;
+import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.review.ReviewRepository;
 import com.kuke.parkingticket.repository.ticket.TicketRepository;
+import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
 import com.kuke.parkingticket.service.comment.CommentService;
 import com.kuke.parkingticket.service.sign.SignService;
@@ -35,18 +37,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReviewServiceTest {
 
     @Autowired SignService signService;
-    @Autowired EntityManager em;
+    @Autowired RegionRepository regionRepository;
     @Autowired TicketRepository ticketRepository;
     @Autowired ReviewService reviewService;
     @Autowired UserRepository userRepository;
     @Autowired ReviewRepository reviewRepository;
+    @Autowired TownRepository townRepository;
 
     @BeforeEach
     public void beforeEach() {
-        Region region = Region.createRegion("ReviewServiceTest");
-        em.persist(region);
-        Town town = Town.createTown("ReviewServiceTest", region);
-        em.persist(town);
+        Region region = regionRepository.save(Region.createRegion("ReviewServiceTest"));
+        Town town = townRepository.save(Town.createTown("ReviewServiceTest", region));
         signService.registerUser(new UserRegisterRequestDto("buyer1", "1234", "buyer1", town.getId()));
         signService.registerUser(new UserRegisterRequestDto("buyer2", "1234", "buyer2", town.getId()));
         signService.registerUser(new UserRegisterRequestDto("buyer3", "1234", "buyer3", town.getId()));
@@ -64,14 +65,12 @@ class ReviewServiceTest {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        em.persist(ticket);
+        Ticket ticket = ticketRepository.save(
+                Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
 
         // when
         ReviewDto dto = reviewService.createReview(new ReviewCreateRequestDto("content", 5, buyer.getId(), seller.getId(), ticket.getId()));
-        em.flush();
-        em.clear();
 
         // then
         Review review = reviewRepository.findById(dto.getId()).orElseThrow(ReviewNotFoundException::new);
@@ -86,20 +85,17 @@ class ReviewServiceTest {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        em.persist(ticket);
+
+        Ticket ticket = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
         ReviewDto dto = reviewService.createReview(new ReviewCreateRequestDto("content", 5, buyer.getId(), seller.getId(), ticket.getId()));
-        em.flush();
-        em.clear();
 
         // when
         reviewRepository.deleteById(dto.getId());
 
         // then
-        assertThrows(ReviewNotFoundException.class, () ->
-                reviewRepository.findById(dto.getId()).orElseThrow(ReviewNotFoundException::new)
-        );
+        assertThatThrownBy(() -> reviewRepository.findById(dto.getId()).orElseThrow(ReviewNotFoundException::new))
+                .isInstanceOf(ReviewNotFoundException.class);
     }
 
 
@@ -109,14 +105,13 @@ class ReviewServiceTest {
         // given
         User buyer = userRepository.findByUid("buyer1").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        em.persist(ticket);
+        Ticket ticket = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
         reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer.getId(), seller.getId(), ticket.getId()));
 
         // when, then
-        assertThrows(ReviewAlreadyWrittenException.class, () ->
-                reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer.getId(), seller.getId(), ticket.getId())));
+        assertThatThrownBy(() -> reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer.getId(), seller.getId(), ticket.getId())))
+                .isInstanceOf(ReviewAlreadyWrittenException.class);
     }
 
     @Test
@@ -128,9 +123,8 @@ class ReviewServiceTest {
         User buyer4 = userRepository.findByUid("buyer4").orElseThrow(UserNotFoundException::new);
         User buyer5 = userRepository.findByUid("buyer5").orElseThrow(UserNotFoundException::new);
         User seller = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket = Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        em.persist(ticket);
+        Ticket ticket = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller, seller.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
         reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer1.getId(), seller.getId(), ticket.getId()));
         reviewService.createReview(new ReviewCreateRequestDto("review2", 5, buyer2.getId(), seller.getId(), ticket.getId()));
         reviewService.createReview(new ReviewCreateRequestDto("review3", 5, buyer3.getId(), seller.getId(), ticket.getId()));
@@ -165,21 +159,16 @@ class ReviewServiceTest {
         User seller3 = userRepository.findByUid("buyer4").orElseThrow(UserNotFoundException::new);
         User seller4 = userRepository.findByUid("buyer5").orElseThrow(UserNotFoundException::new);
         User seller5 = userRepository.findByUid("seller1").orElseThrow(UserNotFoundException::new);
-        Ticket ticket1 = Ticket.createTicket("title", "content", "address", 0, seller1, seller1.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        Ticket ticket2 = Ticket.createTicket("title", "content", "address", 0, seller2, seller2.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        Ticket ticket3 = Ticket.createTicket("title", "content", "address", 0, seller3, seller3.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        Ticket ticket4 = Ticket.createTicket("title", "content", "address", 0, seller4, seller4.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        Ticket ticket5 = Ticket.createTicket("title", "content", "address", 0, seller5, seller5.getTown(),
-                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null);
-        em.persist(ticket1);
-        em.persist(ticket2);
-        em.persist(ticket3);
-        em.persist(ticket4);
-        em.persist(ticket5);
+        Ticket ticket1 = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller1, seller1.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
+        Ticket ticket2 = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller2, seller2.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
+        Ticket ticket3 = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller3, seller3.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
+        Ticket ticket4 = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller4, seller4.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
+        Ticket ticket5 = ticketRepository.save(Ticket.createTicket("title", "content", "address", 0, seller5, seller5.getTown(),
+                PlaceType.APARTMENT, TermType.DAY, TicketStatus.ON, null, null));
         reviewService.createReview(new ReviewCreateRequestDto("review1", 5, buyer.getId(), seller1.getId(), ticket1.getId()));
         reviewService.createReview(new ReviewCreateRequestDto("review2", 5, buyer.getId(), seller2.getId(), ticket2.getId()));
         reviewService.createReview(new ReviewCreateRequestDto("review3", 5, buyer.getId(), seller3.getId(), ticket3.getId()));

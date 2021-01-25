@@ -1,9 +1,12 @@
 package com.kuke.parkingticket.entity;
 
+import com.kuke.parkingticket.TestConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 
 import javax.persistence.EntityManager;
@@ -14,8 +17,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import(value = TestConfig.class)
 class TicketTest {
 
     @PersistenceContext

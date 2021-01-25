@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class TownServiceTest {
-    @Autowired EntityManager em;
     @Autowired TownService townService;
     @Autowired TownRepository townRepository;
     @Autowired RegionService regionService;
@@ -43,8 +42,6 @@ class TownServiceTest {
         for (String townName : townNames) {
             townService.createTown(new TownCreateRequestDto(townName, region.getId()));
         }
-        em.flush();
-        em.clear();
 
         // when
         List<TownDto> result = townService.findTownsByRegionId(region.getId());
@@ -79,8 +76,6 @@ class TownServiceTest {
         townService.deleteTown(townDto.getId());
 
         // then
-        assertThatThrownBy(() -> {
-            townRepository.findById(townDto.getId()).orElseThrow(TownNotFoundException::new);
-        }).isInstanceOf(TownNotFoundException.class);
+        assertThatThrownBy(() -> townRepository.findById(townDto.getId()).orElseThrow(TownNotFoundException::new)).isInstanceOf(TownNotFoundException.class);
     }
 }

@@ -7,6 +7,10 @@ import com.kuke.parkingticket.config.security.JwtTokenProvider;
 import com.kuke.parkingticket.entity.Region;
 import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.entity.User;
+import com.kuke.parkingticket.model.dto.region.RegionCreateRequestDto;
+import com.kuke.parkingticket.model.dto.region.RegionDto;
+import com.kuke.parkingticket.model.dto.town.TownCreateRequestDto;
+import com.kuke.parkingticket.model.dto.town.TownDto;
 import com.kuke.parkingticket.model.dto.user.UserLoginRequestDto;
 import com.kuke.parkingticket.model.dto.user.UserLoginResponseDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
@@ -14,6 +18,8 @@ import com.kuke.parkingticket.model.dto.user.UserRegisterResponseDto;
 import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
+import com.kuke.parkingticket.service.region.RegionService;
+import com.kuke.parkingticket.service.town.TownService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,14 +28,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 class SignServiceTest {
 
-    @Autowired RegionRepository regionRepository;
-    @Autowired TownRepository townRepository;
+    @Autowired RegionService regionService;
+    @Autowired TownService townService;
     @Autowired SignService signService;
     @Autowired UserRepository userRepository;
     @Autowired JwtTokenProvider jwtTokenProvider;
@@ -43,10 +51,8 @@ class SignServiceTest {
     @Test
     public void registerUserTest() {
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
 
         // when
         UserRegisterResponseDto response = signService.registerUser(new UserRegisterRequestDto("gmlwo308", "1234", "쿠케캬캬", town.getId()));
@@ -60,18 +66,17 @@ class SignServiceTest {
 
     @Test
     public void loginUserTest() {
+
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
 
         // when
         UserLoginResponseDto loginResponse = signService.loginUser(new UserLoginRequestDto(uid, password));
-
+        System.out.println("loginResponse.getToken() = " + loginResponse.getToken());
         // then
         assertThat(jwtTokenProvider.validateToken(loginResponse.getToken())).isTrue();
 
@@ -80,10 +85,8 @@ class SignServiceTest {
     @Test
     public void loginUserIssuedRefreshTokenTest() {
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
@@ -99,18 +102,16 @@ class SignServiceTest {
     @Test
     public void duplicateUserRegisterTest() {
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         UserRegisterRequestDto dto = new UserRegisterRequestDto("gmlwo308", "1234", "희재", town.getId());
         UserRegisterRequestDto uidDupDto = new UserRegisterRequestDto("gmlwo308", "1234", "재희", town.getId());
         UserRegisterRequestDto nicDupDto = new UserRegisterRequestDto("803owlmg", "1234", "희재", town.getId());
         signService.registerUser(dto);
 
         // when, then
-        Assertions.assertThrows(UserIdAlreadyExistsException.class, () -> signService.registerUser(uidDupDto));
-        Assertions.assertThrows(UserNicknameAlreadyException.class, () -> signService.registerUser(nicDupDto));
+        assertThatThrownBy(() -> signService.registerUser(uidDupDto)).isInstanceOf(UserIdAlreadyExistsException.class);
+        assertThatThrownBy(() -> signService.registerUser(nicDupDto)).isInstanceOf(UserNicknameAlreadyException.class);
     }
 
     @Test
@@ -118,10 +119,8 @@ class SignServiceTest {
 
         // given
         jwtTokenProvider.setTokenValidMillisecond(-1L);
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
@@ -142,10 +141,8 @@ class SignServiceTest {
     public void logoutUserTest() {
 
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
@@ -164,19 +161,15 @@ class SignServiceTest {
     public void refreshTokenExceptionByInvalidateTokenTest() {
 
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
         UserLoginResponseDto responseDto = signService.loginUser(new UserLoginRequestDto(uid, password));
 
         // when, then
-        assertThatThrownBy(() -> {
-            signService.refreshToken("invalidate", responseDto.getRefreshToken());
-        }).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> signService.refreshToken("invalidate", responseDto.getRefreshToken())).isInstanceOf(AccessDeniedException.class);
 
     }
 
@@ -185,19 +178,15 @@ class SignServiceTest {
 
         // given
         jwtTokenProvider.setTokenValidMillisecond(-1L);
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
         UserLoginResponseDto responseDto = signService.loginUser(new UserLoginRequestDto(uid, password));
 
         // when, then
-        assertThatThrownBy(() -> {
-            signService.refreshToken(responseDto.getToken(), "different refresh token");
-        }).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> signService.refreshToken(responseDto.getToken(), "different refresh token")).isInstanceOf(AccessDeniedException.class);
 
     }
 
@@ -206,19 +195,15 @@ class SignServiceTest {
     public void refreshTokenExceptionByValidateTokenTest() {
 
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
         UserLoginResponseDto responseDto = signService.loginUser(new UserLoginRequestDto(uid, password));
 
         // when, then
-        assertThatThrownBy(() -> {
-            signService.refreshToken(responseDto.getToken(), responseDto.getRefreshToken());
-        }).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> signService.refreshToken(responseDto.getToken(), responseDto.getRefreshToken())).isInstanceOf(AccessDeniedException.class);
 
     }
 
@@ -227,19 +212,15 @@ class SignServiceTest {
 
         // given
         jwtTokenProvider.setRefreshTokenValidMillisecond(-1L);
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
         UserLoginResponseDto loginResponse = signService.loginUser(new UserLoginRequestDto(uid, password));
 
         // when, then
-        assertThatThrownBy(() -> {
-            signService.refreshToken(loginResponse.getToken(), loginResponse.getRefreshToken());
-        }).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> signService.refreshToken(loginResponse.getToken(), loginResponse.getRefreshToken())).isInstanceOf(AccessDeniedException.class);
     }
 
 
@@ -247,10 +228,8 @@ class SignServiceTest {
     public void refreshTokenExceptionByLogoutTest() {
 
         // given
-        Region region = Region.createRegion("서울");
-        regionRepository.save(region);
-        Town town = Town.createTown("희재동", region);
-        townRepository.save(town);
+        RegionDto region = regionService.createRegion(new RegionCreateRequestDto("서울"));
+        TownDto town = townService.createTown(new TownCreateRequestDto("희재동", region.getId()));
         String uid = "gmlwo308";
         String password = "1234";
         signService.registerUser(new UserRegisterRequestDto(uid, password, "쿠케캬캬", town.getId()));
@@ -260,9 +239,7 @@ class SignServiceTest {
         signService.logoutUser(loginResponse.getToken());
 
         // then
-        assertThatThrownBy(() -> {
-            signService.refreshToken(loginResponse.getToken(), loginResponse.getRefreshToken());
-        }).isInstanceOf(AccessDeniedException.class);
+        assertThatThrownBy(() -> signService.refreshToken(loginResponse.getToken(), loginResponse.getRefreshToken())).isInstanceOf(AccessDeniedException.class);
 
     }
 

@@ -11,6 +11,8 @@ import com.kuke.parkingticket.model.dto.message.MessageDto;
 import com.kuke.parkingticket.model.dto.user.UserRegisterRequestDto;
 import com.kuke.parkingticket.repository.history.HistoryRepository;
 import com.kuke.parkingticket.repository.message.MessageRepository;
+import com.kuke.parkingticket.repository.region.RegionRepository;
+import com.kuke.parkingticket.repository.town.TownRepository;
 import com.kuke.parkingticket.repository.user.UserRepository;
 import com.kuke.parkingticket.service.history.HistoryService;
 import com.kuke.parkingticket.service.sign.SignService;
@@ -39,17 +41,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class MessageServiceTest {
 
     @Autowired SignService signService;
-    @Autowired EntityManager em;
+    @Autowired RegionRepository regionRepository;
+    @Autowired TownRepository townRepository;
     @Autowired MessageService messageService;
     @Autowired UserRepository userRepository;
     @Autowired MessageRepository messageRepository;
 
     @BeforeEach
     public void beforeEach() {
-        Region region = Region.createRegion("MessageServiceTest");
-        em.persist(region);
-        Town town = Town.createTown("MessageServiceTest", region);
-        em.persist(town);
+        Region region = regionRepository.save(Region.createRegion("MessageServiceTest"));
+        Town town = townRepository.save(Town.createTown("MessageServiceTest", region));
         signService.registerUser(new UserRegisterRequestDto("sender1", "1234", "sender1", town.getId()));
         signService.registerUser(new UserRegisterRequestDto("receiver1", "1234", "receiver1", town.getId()));
     }
@@ -139,9 +140,8 @@ class MessageServiceTest {
         messageService.deleteMessage(messageDto.getId());
 
         // then
-        assertThrows(MessageNotFoundException.class, () ->
-                messageRepository.findById(messageDto.getId()).orElseThrow(MessageNotFoundException::new)
-        );
+        assertThatThrownBy(() -> messageRepository.findById(messageDto.getId()).orElseThrow(MessageNotFoundException::new))
+                .isInstanceOf(MessageNotFoundException.class);
     }
 
     @Test
@@ -151,8 +151,6 @@ class MessageServiceTest {
         User sender = userRepository.findByUid("sender1").orElseThrow(UserNotFoundException::new);
         User receiver = userRepository.findByUid("receiver1").orElseThrow(UserNotFoundException::new);
         MessageDto messageDto = messageService.createMessage(new MessageCreateRequestDto(sender.getId(), receiver.getId(), "message"));
-        em.flush();
-        em.clear();
 
         // when
         MessageDto result = messageService.readMessage(messageDto.getId());

@@ -6,8 +6,10 @@ import com.kuke.parkingticket.entity.Town;
 import com.kuke.parkingticket.model.dto.region.RegionCreateRequestDto;
 import com.kuke.parkingticket.model.dto.region.RegionDto;
 import com.kuke.parkingticket.model.dto.region.RegionWithTownDto;
+import com.kuke.parkingticket.model.dto.town.TownCreateRequestDto;
 import com.kuke.parkingticket.repository.region.RegionRepository;
 import com.kuke.parkingticket.repository.town.TownRepository;
+import com.kuke.parkingticket.service.town.TownService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,25 +24,23 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class RegionServiceTest {
+    @Autowired TownService townService;
+    @Autowired RegionService regionService;
     @Autowired EntityManager em;
     @Autowired RegionRepository regionRepository;
-    @Autowired TownRepository townRepository;
-    @Autowired RegionService regionService;
 
     @Test
     public void findAllRegionsWithTownsTest() {
 
         // given
-        String[] regionNames = new String[]{"region1", "region2"};
-        String[][] townNames = new String[2][];
-        townNames[0] = new String[]{"town11", "town12"};
-        townNames[1] = new String[]{"town21", "town22", "town23"};
-        for(int i=0; i<regionNames.length; i++) {
-            Region region = regionRepository.save(Region.createRegion(regionNames[i]));
-            for(int j=0; j<townNames[i].length; j++) {
-                townRepository.save(Town.createTown(townNames[i][j], region));
+        int townLengthPerRegion[] = {2, 3};
+        for(int i=0; i<townLengthPerRegion.length; i++) {
+            RegionDto region = regionService.createRegion(new RegionCreateRequestDto("region" + i));
+            for(int j=0; j<townLengthPerRegion[i]; j++) {
+                townService.createTown(new TownCreateRequestDto("town" + i + j, region.getId()));
             }
         }
+
         em.flush();
         em.clear();
 
@@ -56,12 +56,9 @@ class RegionServiceTest {
     @Test
     public void findAllRegionsTest() {
         // given
-        String[] regionNames = new String[]{"region1", "region2"};
-        for(int i=0; i<regionNames.length; i++) {
-            Region region = regionRepository.save(Region.createRegion(regionNames[i]));
+        for(int i=0; i<2; i++) {
+            regionService.createRegion(new RegionCreateRequestDto("region" + i));
         }
-        em.flush();
-        em.clear();
 
         // when
         List<RegionDto> result = regionService.findAllRegions();
@@ -94,9 +91,7 @@ class RegionServiceTest {
         regionService.deleteRegion(region.getId());
 
         // then
-        assertThatThrownBy(() -> {
-            regionRepository.findById(region.getId()).orElseThrow(RegionNotFoundException::new);
-        }).isInstanceOf(RegionNotFoundException.class);
+        assertThatThrownBy(() -> regionRepository.findById(region.getId()).orElseThrow(RegionNotFoundException::new)).isInstanceOf(RegionNotFoundException.class);
     }
 
 }

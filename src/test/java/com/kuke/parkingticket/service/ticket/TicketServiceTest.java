@@ -150,7 +150,7 @@ class TicketServiceTest {
         ticketService.deleteTicket(ticketDto.getId());
 
         // then
-        assertThrows(TicketNotFoundException.class,
-                () -> ticketRepository.findById(ticketDto.getId()).orElseThrow(TicketNotFoundException::new));
+        assertThatThrownBy(() -> ticketRepository.findById(ticketDto.getId()).orElseThrow(TicketNotFoundException::new))
+                .isInstanceOf(TicketNotFoundException.class);
     }
 }
